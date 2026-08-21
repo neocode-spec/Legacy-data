@@ -1,62 +1,63 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signOut, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<!-- Ensure your JavaScript is wrapped inside script tags -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      GoogleAuthProvider, 
+      signInWithPopup, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY", // Replace with your actual Firebase API Key
-  authDomain: "lega-10e72.firebaseapp.com",
-  projectId: "lega-10e72",
-  storageBucket: "lega-10e72.appspot.com",
-  messagingSenderId: "64220913818",
-  appId: "1:64220913818:web:c0362b644a52e70ad8ff23"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDh9vQKIIKNWTl8GfjLgNzksEWBUIY6mYs",
+      authDomain: "lega-10e72.firebaseapp.com",
+      projectId: "lega-10e72",
+      storageBucket: "lega-10e72.firebasestorage.app",
+      messagingSenderId: "64220913818",
+      appId: "1:64220913818:web:c0362b644a52e70ad8ff23"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-const authBtn = document.getElementById("auth-btn");
-const getStartedBtn = document.getElementById("get-started-btn");
-const landingView = document.getElementById("landing-view");
-const dashboardView = document.getElementById("dashboard-view");
-const userEmail = document.getElementById("user-email");
-const userAvatar = document.getElementById("user-avatar");
+    const authBtn = document.getElementById("auth-btn");
+    const getStartedBtn = document.getElementById("get-started-btn");
+    const landingView = document.getElementById("landing-view");
+    const dashboardView = document.getElementById("dashboard-view");
+    const userEmail = document.getElementById("user-email");
+    const userAvatar = document.getElementById("user-avatar");
 
-// Auth state observer to switch between Landing Page and Dashboard
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // Show Dashboard
-    landingView.classList.add("hidden");
-    dashboardView.classList.remove("hidden");
-    authBtn.textContent = "Log Out";
-    
-    userEmail.textContent = user.email || "Authenticated User";
-    const initial = (user.displayName || user.email || "U").charAt(0).toUpperCase();
-    userAvatar.textContent = initial;
-  } else {
-    // Show Landing Page
-    landingView.classList.remove("hidden");
-    dashboardView.classList.add("hidden");
-    authBtn.textContent = "Sign In / Register";
-  }
-});
-
-// Trigger Google Login
-const handleLogin = () => {
-  if (auth.currentUser) {
-    signOut(auth).catch((err) => console.error("Sign out error:", err));
-  } else {
-    signInWithPopup(auth, provider).catch((err) => {
-      console.error("Auth popup error:", err);
-      alert("Authentication failed. Make sure legacy-data.onrender.com is added to Authorized Domains in Firebase!");
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        landingView?.classList.add("hidden");
+        dashboardView?.classList.remove("hidden");
+        if (authBtn) authBtn.textContent = "Log Out";
+        
+        if (userEmail) userEmail.textContent = user.email || "Authenticated User";
+        const initial = (user.displayName || user.email || "U").charAt(0).toUpperCase();
+        if (userAvatar) userAvatar.textContent = initial;
+      } else {
+        landingView?.classList.remove("hidden");
+        dashboardView?.classList.add("hidden");
+        if (authBtn) authBtn.textContent = "Sign In / Register";
+      }
     });
-  }
-};
 
-authBtn.addEventListener("click", handleLogin);
-getStartedBtn.addEventListener("click", handleLogin);
+    const handleLogin = () => {
+      if (auth.currentUser) {
+        signOut(auth).catch((err) => console.error("Sign out error:", err));
+      } else {
+        signInWithPopup(auth, provider).catch((err) => {
+          console.error("Auth popup error:", err);
+          alert("Authentication failed. Make sure legacy-data.onrender.com is added to Authorized Domains in Firebase!");
+        });
+      }
+    };
+
+    authBtn?.addEventListener("click", handleLogin);
+    getStartedBtn?.addEventListener("click", handleLogin);
+  </script>
+</body>
+</html>
