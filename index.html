@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legacy | African Field Data Infrastructure</title>
+  <style>
+    :root {
+      --bg-dark: #0a0a0c;
+      --card-bg: #121318;
+      --text-main: #f0f0f2;
+      --text-sub: #8a8d9b;
+      --accent-red: #e63946;
+      --accent-dark-red: #900c3f;
+      --border: #222530;
+      --input-bg: #181920;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background: #0d0e12;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 1.5px;
+    }
+
+    /* Red/Black Diamond Logo */
+    .diamond-logo {
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, var(--accent-red) 50%, var(--accent-dark-red) 50%);
+      transform: rotate(45deg);
+      border: 1px solid #ff4d5a;
+      box-shadow: 0 0 10px rgba(230, 57, 70, 0.4);
+    }
+
+    .nav-actions button {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+
+    .btn-red {
+      background: var(--accent-red) !important;
+      border-color: var(--accent-red) !important;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 { margin-top: 0; }
+    .subtext { color: var(--text-sub); font-size: 14px; line-height: 1.6; }
+
+    .form-group { margin-bottom: 20px; }
+    label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    input[type="range"] { accent-color: var(--accent-red); margin-top: 8px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .result-box {
+      background: #18090c;
+      border: 1px solid var(--accent-red);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .score-val { font-size: 36px; font-weight: 800; color: var(--accent-red); }
+    .formula-logs { font-family: monospace; font-size: 12px; color: var(--text-sub); line-height: 1.8; margin-top: 12px; }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 32px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="brand">
+      <div class="diamond-logo"></div>
+      <span>LEGACY</span>
+    </div>
+    <div class="nav-actions">
+      <button onclick="toggleAuthModal()">Sign In / Register</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- HERO INTRO -->
+    <div class="card">
+      <h1>Deep African Context. Purified for Models.</h1>
+      <p class="subtext">Upload ground-truth observational data collected from direct field operations. Legacy runs multi-pass math filters to generate a verified precision score ($F$) ready for model training.</p>
+    </div>
+
+    <!-- DOCUMENT UPLOAD & FIELD CALCULATION -->
+    <div class="card">
+      <h2>Field Data Capture & Document Pipeline</h2>
+      <p class="subtext">Upload field transcripts or notes, calibrated using the Rivers State G-Scale framework.</p>
+
+      <div class="form-group">
+        <label>Document Upload (PDF, Word, TXT)</label>
+        <input type="file" id="doc-file">
+      </div>
+
+      <div class="form-group">
+        <label>Observation / Topic Narrative</label>
+        <textarea id="obs-text" rows="3" placeholder="Describe field findings or subject context..."></textarea>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Location Target</label>
+          <input type="text" id="loc-text" placeholder="e.g. Okuru, Rivers State">
+        </div>
+        <div class="form-group">
+          <label>Geography Scale (G): <span id="disp-g">16</span></label>
+          <input type="range" id="g" min="11" max="22" value="16" oninput="calculate()">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Certainty (C): <span id="disp-c">0.50</span></label>
+          <input type="range" id="c" min="0" max="1" step="0.05" value="0.50" oninput="calculate()">
+        </div>
+        <div class="form-group">
+          <label>Body Language Alignment (B): <span id="disp-b">0.50</span></label>
+          <input type="range" id="b" min="0" max="1" step="0.05" value="0.50" oninput="calculate()">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Repetition Rate (R): <span id="disp-r">0.30</span></label>
+          <input type="range" id="r" min="0" max="1" step="0.05" value="0.30" oninput="calculate()">
+        </div>
+        <div class="form-group">
+          <label>Session Intensity (|I|): <span id="disp-i">0</span></label>
+          <input type="range" id="i" min="-4" max="4" step="1" value="0" oninput="calculate()">
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label>Lenses</label>
+          <input type="number" id="lenses" value="4" oninput="calculate()">
+        </div>
+        <div class="form-group">
+          <label>Confirmations</label>
+          <input type="number" id="confirm" value="4" oninput="calculate()">
+        </div>
+        <div class="form-group">
+          <label>Contradictions</label>
+          <input type="number" id="contradict" value="0" oninput="calculate()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Independent Sources (Cap at 3)</label>
+        <input type="number" id="sources" value="3" oninput="calculate()">
+      </div>
+
+      <button class="btn-red" style="width: 100%; padding: 14px; cursor: pointer; border-radius: 6px;" onclick="calculate()">RUN PURIFICATION FORMULA</button>
+
+      <div class="result-box">
+        <div class="subtext">Confidence Score Output:</div>
+        <div class="score-val" id="score-out">4.6 / 20</div>
+        <div class="formula-logs" id="math-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="modal" id="auth-modal">
+    <div class="modal-content">
+      <h2 style="margin-bottom: 8px;">Access Legacy Platform</h2>
+      <p class="subtext" style="margin-bottom: 20px;">Enter credentials to access field logs and database API keys.</p>
+      
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="founder@legacy.ai">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+
+      <button class="btn-red" style="width: 100%; padding: 12px; border-radius: 6px; cursor: pointer;" onclick="toggleAuthModal()">Continue</button>
+      <button style="width: 100%; padding: 10px; margin-top: 8px; background: transparent; border: none; color: var(--text-sub); cursor: pointer;" onclick="toggleAuthModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleAuthModal() {
+      const modal = document.getElementById('auth-modal');
+      modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function calculate() {
+      let G = parseFloat(document.getElementById('g').value);
+      let C = parseFloat(document.getElementById('c').value);
+      let B = parseFloat(document.getElementById('b').value);
+      let R = parseFloat(document.getElementById('r').value);
+      let I = parseFloat(document.getElementById('i').value);
+      let lenses = parseFloat(document.getElementById('lenses').value) || 1;
+      let confirm = parseFloat(document.getElementById('confirm').value) || 0;
+      let contradict = parseFloat(document.getElementById('contradict').value) || 0;
+      let sources = parseFloat(document.getElementById('sources').value) || 1;
+
+      document.getElementById('disp-g').innerText = G;
+      document.getElementById('disp-c').innerText = C.toFixed(2);
+      document.getElementById('disp-b').innerText = B.toFixed(2);
+      document.getElementById('disp-r').innerText = R.toFixed(2);
+      document.getElementById('disp-i').innerText = I;
+
+      let G_norm = (G - 11) / (22 - 11);
+      let W = ((C * B) + R) * (1 + Math.pow(G_norm, 2)) * (1 + (Math.abs(I) / 4));
+      let M = W * ((confirm - contradict) / lenses);
+      let V = Math.min(1, sources / 3);
+      let F = M * V;
+
+      let scaled = (F * 4).toFixed(1);
+
+      document.getElementById('score-out').innerText = `${scaled} / 20`;
+      document.getElementById('math-out').innerHTML = `
+        G_norm: ${G_norm.toFixed(3)} | W: ${W.toFixed(3)}<br>
+        M: ${M.toFixed(3)} | V: ${V.toFixed(3)}<br>
+        Final Score (F): ${F.toFixed(3)}
+      `;
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
