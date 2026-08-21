@@ -42,7 +42,6 @@
       letter-spacing: 1.5px;
     }
 
-    /* Red/Black Diamond Logo */
     .diamond-logo {
       width: 22px;
       height: 22px;
@@ -67,6 +66,7 @@
       background: var(--accent-red) !important;
       border-color: var(--accent-red) !important;
       font-weight: 600;
+      color: #fff;
     }
 
     .container {
@@ -114,7 +114,6 @@
     .score-val { font-size: 36px; font-weight: 800; color: var(--accent-red); }
     .formula-logs { font-family: monospace; font-size: 12px; color: var(--text-sub); line-height: 1.8; margin-top: 12px; }
 
-    /* Modal Styling */
     .modal {
       display: none;
       position: fixed;
@@ -141,29 +140,23 @@
       <span>LEGACY</span>
     </div>
     <div class="nav-actions">
-      <button onclick="toggleAuthModal()">Sign In / Register</button>
+      <span id="user-display" style="font-size:13px; color:var(--text-sub); margin-right:8px;"></span>
+      <button id="auth-btn" onclick="toggleAuthModal()">Sign In / Register</button>
     </div>
   </nav>
 
   <div class="container">
-    <!-- HERO INTRO -->
     <div class="card">
       <h1>Deep African Context. Purified for Models.</h1>
       <p class="subtext">Upload ground-truth observational data collected from direct field operations. Legacy runs multi-pass math filters to generate a verified precision score ($F$) ready for model training.</p>
     </div>
 
-    <!-- DOCUMENT UPLOAD & FIELD CALCULATION -->
     <div class="card">
       <h2>Field Data Capture & Document Pipeline</h2>
       <p class="subtext">Upload field transcripts or notes, calibrated using the Rivers State G-Scale framework.</p>
 
       <div class="form-group">
-        <label>Document Upload (PDF, Word, TXT)</label>
-        <input type="file" id="doc-file">
-      </div>
-
-      <div class="form-group">
-        <label>Observation / Topic Narrative</label>
+        <label>Observation Title / Topic Narrative</label>
         <textarea id="obs-text" rows="3" placeholder="Describe field findings or subject context..."></textarea>
       </div>
 
@@ -174,53 +167,56 @@
         </div>
         <div class="form-group">
           <label>Geography Scale (G): <span id="disp-g">16</span></label>
-          <input type="range" id="g" min="11" max="22" value="16" oninput="calculate()">
+          <input type="range" id="g" min="11" max="22" value="16">
         </div>
       </div>
 
       <div class="grid-2">
         <div class="form-group">
           <label>Certainty (C): <span id="disp-c">0.50</span></label>
-          <input type="range" id="c" min="0" max="1" step="0.05" value="0.50" oninput="calculate()">
+          <input type="range" id="c" min="0" max="1" step="0.05" value="0.50">
         </div>
         <div class="form-group">
           <label>Body Language Alignment (B): <span id="disp-b">0.50</span></label>
-          <input type="range" id="b" min="0" max="1" step="0.05" value="0.50" oninput="calculate()">
+          <input type="range" id="b" min="0" max="1" step="0.05" value="0.50">
         </div>
       </div>
 
       <div class="grid-2">
         <div class="form-group">
           <label>Repetition Rate (R): <span id="disp-r">0.30</span></label>
-          <input type="range" id="r" min="0" max="1" step="0.05" value="0.30" oninput="calculate()">
+          <input type="range" id="r" min="0" max="1" step="0.05" value="0.30">
         </div>
         <div class="form-group">
           <label>Session Intensity (|I|): <span id="disp-i">0</span></label>
-          <input type="range" id="i" min="-4" max="4" step="1" value="0" oninput="calculate()">
+          <input type="range" id="i" min="-4" max="4" step="1" value="0">
         </div>
       </div>
 
       <div class="grid-3">
         <div class="form-group">
           <label>Lenses</label>
-          <input type="number" id="lenses" value="4" oninput="calculate()">
+          <input type="number" id="lenses" value="4">
         </div>
         <div class="form-group">
           <label>Confirmations</label>
-          <input type="number" id="confirm" value="4" oninput="calculate()">
+          <input type="number" id="confirm" value="4">
         </div>
         <div class="form-group">
           <label>Contradictions</label>
-          <input type="number" id="contradict" value="0" oninput="calculate()">
+          <input type="number" id="contradict" value="0">
         </div>
       </div>
 
       <div class="form-group">
         <label>Independent Sources (Cap at 3)</label>
-        <input type="number" id="sources" value="3" oninput="calculate()">
+        <input type="number" id="sources" value="3">
       </div>
 
-      <button class="btn-red" style="width: 100%; padding: 14px; cursor: pointer; border-radius: 6px;" onclick="calculate()">RUN PURIFICATION FORMULA</button>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn-red" style="flex:1; padding: 14px; cursor: pointer; border-radius: 6px;" id="calc-btn">RUN PURIFICATION FORMULA</button>
+        <button style="flex:1; padding: 14px; cursor: pointer; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border); color: #fff;" id="save-btn">SAVE FIELD DATA TO FIRESTORE</button>
+      </div>
 
       <div class="result-box">
         <div class="subtext">Confidence Score Output:</div>
@@ -230,31 +226,94 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL -->
   <div class="modal" id="auth-modal">
     <div class="modal-content">
       <h2 style="margin-bottom: 8px;">Access Legacy Platform</h2>
-      <p class="subtext" style="margin-bottom: 20px;">Enter credentials to access field logs and database API keys.</p>
+      <p class="subtext" style="margin-bottom: 20px;">Enter credentials to access field logs and database storage.</p>
       
       <div class="form-group">
         <label>Email Address</label>
-        <input type="email" placeholder="founder@legacy.ai">
+        <input type="email" id="auth-email" placeholder="field@legacy.ai">
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" placeholder="••••••••">
+        <input type="password" id="auth-pass" placeholder="••••••••">
       </div>
 
-      <button class="btn-red" style="width: 100%; padding: 12px; border-radius: 6px; cursor: pointer;" onclick="toggleAuthModal()">Continue</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-red" style="flex:1; padding: 12px; border-radius: 6px; cursor: pointer;" id="btn-login">Sign In</button>
+        <button style="flex:1; padding: 12px; border-radius: 6px; cursor: pointer; background: var(--input-bg); border: 1px solid var(--border); color:#fff;" id="btn-signup">Register</button>
+      </div>
       <button style="width: 100%; padding: 10px; margin-top: 8px; background: transparent; border: none; color: var(--text-sub); cursor: pointer;" onclick="toggleAuthModal()">Cancel</button>
     </div>
   </div>
 
-  <script>
-    function toggleAuthModal() {
+  <!-- FIREBASE MODULE INTEGRATION -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDh9vQKIIKNWTl8GfjLgNzksEWBUIY6mYs",
+      authDomain: "lega-10e72.firebaseapp.com",
+      projectId: "lega-10e72",
+      storageBucket: "lega-10e72.firebasestorage.app",
+      messagingSenderId: "64220913818",
+      appId: "1:64220913818:web:c0362b644a52e70ad8ff23",
+      measurementId: "G-YHZYTJKGF5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      const display = document.getElementById('user-display');
+      const btn = document.getElementById('auth-btn');
+      if (user) {
+        currentUser = user;
+        display.innerText = user.email;
+        btn.innerText = "Log Out";
+        btn.onclick = () => signOut(auth);
+      } else {
+        currentUser = null;
+        display.innerText = "";
+        btn.innerText = "Sign In / Register";
+        btn.onclick = () => window.toggleAuthModal();
+      }
+    });
+
+    window.toggleAuthModal = function() {
       const modal = document.getElementById('auth-modal');
       modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-    }
+    };
+
+    document.getElementById('btn-signup').addEventListener('click', async () => {
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-pass').value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        alert('Account created successfully!');
+        window.toggleAuthModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-pass').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        alert('Logged in successfully!');
+        window.toggleAuthModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
 
     function calculate() {
       let G = parseFloat(document.getElementById('g').value);
@@ -287,7 +346,34 @@
         M: ${M.toFixed(3)} | V: ${V.toFixed(3)}<br>
         Final Score (F): ${F.toFixed(3)}
       `;
+
+      return { G, C, B, R, I, lenses, confirm, contradict, sources, F, scaled };
     }
+
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+
+    document.getElementById('calc-btn').addEventListener('click', calculate);
+
+    document.getElementById('save-btn').addEventListener('click', async () => {
+      const calcData = calculate();
+      const narrative = document.getElementById('obs-text').value;
+      const location = document.getElementById('loc-text').value;
+
+      try {
+        await addDoc(collection(db, "field_records"), {
+          narrative,
+          location,
+          metrics: calcData,
+          user: currentUser ? currentUser.email : "Anonymous Field Agent",
+          createdAt: serverTimestamp()
+        });
+        alert('Field entry saved directly to Firestore!');
+      } catch (err) {
+        alert('Error saving record: ' + err.message);
+      }
+    });
 
     calculate();
   </script>
