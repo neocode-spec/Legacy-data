@@ -3,92 +3,291 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legacy | Ground-Truth Field Intelligence</title>
+  <title>Legacy | Ground-Truth Intelligence</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff0055'/><stop offset='100%25' stop-color='%237a00ff'/></linearGradient></defs><rect x='15' y='15' width='70' height='70' rx='12' transform='rotate(45 50 50)' fill='url(%23g)' stroke='%23ff0055' stroke-width='4'/></svg>">
+
   <style>
     :root {
-      --bg-color: #050507;
-      --card-bg: #0f0f13;
-      --accent-pink: #ff007a;
-      --accent-purple: #9d00ff;
-      --text-main: #ffffff;
-      --text-sub: #8a8a9e;
-      --border-color: #1e1e26;
+      --bg-black: #050508;
+      --card-bg: rgba(18, 18, 26, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --neon-pink: #ff0055;
+      --neon-purple: #7a00ff;
+      --text-main: #f5f5f7;
+      --text-muted: #8e8e93;
+      --input-bg: #0c0d12;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-color); }
-    .logo { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
-    .logo-diamond { width: 18px; height: 18px; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); transform: rotate(45deg); border-radius: 3px; }
+    body {
+      background-color: var(--bg-black);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    .btn-primary { background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); color: white; border: none; padding: 10px 22px; border-radius: 20px; font-weight: 600; cursor: pointer; }
-    .btn-primary:hover { opacity: 0.9; }
+    /* NAVIGATION */
+    nav {
+      background: rgba(5, 5, 8, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-    /* Landing Screen */
-    .landing-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 20px; flex: 1; }
-    .landing-title { font-size: 3rem; font-weight: 800; max-width: 800px; line-height: 1.2; margin-bottom: 20px; }
-    .landing-subtitle { color: var(--text-sub); max-width: 600px; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 2px;
+      text-decoration: none;
+      color: #fff;
+    }
 
-    /* Dashboard Screen */
-    .dashboard-screen { display: flex; padding: 40px; gap: 40px; flex: 1; }
-    .sidebar { width: 320px; background-color: var(--card-bg); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px; border: 1px solid var(--border-color); height: fit-content; }
-    .user-profile { display: flex; align-items: center; gap: 16px; }
-    .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; }
-    .user-info .email { font-size: 0.9rem; font-weight: 600; word-break: break-all; }
-    .user-info .role { font-size: 0.75rem; color: var(--text-sub); margin-top: 4px; }
+    .diamond-icon {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+      transform: rotate(45deg);
+      border-radius: 4px;
+      box-shadow: 0 0 15px var(--neon-pink);
+    }
 
-    .input-group { display: flex; flex-direction: column; gap: 12px; }
-    textarea, input[type="text"] { width: 100%; background-color: #050507; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; color: white; outline: none; }
-    textarea { height: 100px; resize: none; }
+    .nav-btn {
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+      border: none;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.4);
+      transition: transform 0.2s;
+    }
+    .nav-btn:hover { transform: scale(1.04); }
 
-    .feed { flex: 1; }
-    .feed h2 { font-size: 1.5rem; margin-bottom: 20px; }
-    .hidden { display: none !important; }
+    /* VIEW SWITCHING */
+    .page-view { display: none; min-height: calc(100vh - 70px); }
+    .page-view.active { display: block; }
+
+    /* PAGE 1: LANDING */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 20px;
+      background: radial-gradient(circle at center, rgba(122, 0, 255, 0.15) 0%, rgba(5, 5, 8, 1) 70%);
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin-bottom: 40px;
+    }
+
+    /* PAGE 2: AUTH PORTAL */
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 20px;
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .form-group input:focus { border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255, 0, 85, 0.2); }
+
+    /* PAGE 3: APP PLATFORM (FEED + PROFILE SIDEBAR) */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      max-width: 1300px;
+      margin: 0 auto;
+      gap: 30px;
+      padding: 30px 20px;
+    }
+
+    .sidebar-profile {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 24px;
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+
+    .avatar-large {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+    }
+
+    .feed-container { display: flex; flex-direction: column; gap: 20px; }
+
+    .feed-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255, 0, 85, 0.15);
+      border: 1px solid var(--neon-pink);
+      color: var(--neon-pink);
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">
-      <div class="logo-diamond"></div>
+  <!-- HEADER NAVIGATION -->
+  <nav>
+    <a href="#" class="brand" onclick="switchPage('page-landing')">
+      <div class="diamond-icon"></div>
       <span>LEGACY</span>
+    </a>
+    <div id="nav-actions">
+      <button class="nav-btn" onclick="switchPage('page-auth')">Sign In / Register</button>
     </div>
-    <button id="auth-btn" class="btn-primary">Sign In / Register</button>
-  </header>
+  </nav>
 
-  <!-- LANDING / ONBOARDING VIEW -->
-  <main id="landing-view" class="landing-screen">
-    <h1 class="landing-title">Ground-Truth Field Intelligence</h1>
-    <p class="landing-subtitle">Analyze datasets, draft observations with Gemini AI copilot, and share verified reports with the community.</p>
-    <button id="get-started-btn" class="btn-primary" style="padding: 14px 36px; font-size: 1rem;">Get Started</button>
-  </main>
+  <!-- PAGE 1: LANDING INTRO -->
+  <div id="page-landing" class="page-view active">
+    <section class="hero">
+      <h1>Deep Regional Context.<br>Purified for Frontier AI.</h1>
+      <p>Legacy captures and mathematically purifies real-world observational data to train precision models.</p>
+      <button class="nav-btn" style="padding: 16px 36px; font-size: 16px;" onclick="switchPage('page-auth')">Get Started</button>
+    </section>
+  </div>
 
-  <!-- LOGGED-IN DASHBOARD VIEW -->
-  <main id="dashboard-view" class="dashboard-screen hidden">
-    <div class="sidebar">
-      <div class="user-profile">
-        <div id="user-avatar" class="avatar">U</div>
-        <div class="user-info">
-          <div id="user-email" class="email">Authenticated User</div>
-          <div class="role">Verified Field Contributor</div>
+  <!-- PAGE 2: AUTHENTICATION PORTAL -->
+  <div id="page-auth" class="page-view">
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2 style="margin-bottom: 8px;">Welcome to Legacy</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Sign in or create an account to view and upload observations.</p>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="auth-email" placeholder="agent@legacy.ai">
         </div>
-      </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="auth-pass" placeholder="••••••••">
+        </div>
 
-      <div class="input-group">
-        <label style="font-weight:600; font-size:0.9rem;">Publish New Log</label>
-        <textarea id="field-narrative" placeholder="Field narrative..."></textarea>
-        <input type="text" id="location-target" placeholder="Location target..." />
-        <button class="btn-primary" style="border-radius:10px;">Publish Entry</button>
+        <div style="display:flex; gap:12px; margin-bottom: 16px;">
+          <button class="nav-btn" style="flex:1;" id="btn-login">Sign In</button>
+          <button class="nav-btn" style="flex:1; background: transparent; border: 1px solid var(--glass-border); box-shadow:none;" id="btn-signup">Register</button>
+        </div>
+
+        <div style="text-align: center; color: var(--text-muted); font-size: 12px; margin: 12px 0;">OR</div>
+
+        <button id="btn-google" style="width: 100%; padding: 12px; border-radius: 12px; background: #fff; color: #000; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          Continue with Google
+        </button>
       </div>
     </div>
+  </div>
 
-    <div class="feed">
-      <h2>Community Field Feed</h2>
-      <div id="feed-container"></div>
+  <!-- PAGE 3: MAIN APP PLATFORM -->
+  <div id="page-app" class="page-view">
+    <div class="app-layout">
+      
+      <!-- PROFILE & PUBLISH SIDEBAR -->
+      <div class="sidebar-profile">
+        <div class="avatar-large" id="profile-avatar">U</div>
+        <h3 id="profile-email" style="font-size: 16px; word-break: break-all;">User Account</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">Verified Field Contributor</p>
+        
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 20px 0;">
+
+        <h4>Publish New Log</h4>
+        <div class="form-group" style="margin-top: 12px;">
+          <textarea id="obs-text" rows="3" placeholder="Field narrative..."></textarea>
+        </div>
+        <div class="form-group">
+          <input type="text" id="loc-text" placeholder="Location target...">
+        </div>
+        <button class="nav-btn" style="width: 100%;" id="save-btn">Publish Entry</button>
+      </div>
+
+      <!-- MAIN COMMUNITY FEED -->
+      <div class="feed-container">
+        <h2>Community Field Feed</h2>
+        <div id="public-feed"></div>
+      </div>
+
     </div>
-  </main>
+  </div>
 
   <script type="module" src="app.js"></script>
+  <script>
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+    window.switchPage = switchPage;
+  </script>
 </body>
 </html>
