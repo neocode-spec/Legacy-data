@@ -6,181 +6,66 @@
   <title>Legacy | Ground-Truth Field Intelligence</title>
   <style>
     :root {
-      --bg-color: #0b0b0e;
-      --card-bg: #141419;
-      --accent-purple: #d900ff;
+      --bg-color: #050507;
+      --card-bg: #0f0f13;
       --accent-pink: #ff007a;
+      --accent-purple: #9d00ff;
       --text-main: #ffffff;
-      --text-sub: #a0a0ab;
-      --border-color: #26262e;
+      --text-sub: #8a8a9e;
+      --border-color: #1e1e26;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-color); }
+    .logo { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
+    .logo-diamond { width: 18px; height: 18px; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); transform: rotate(45deg); border-radius: 3px; }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      border-bottom: 1px solid var(--border-color);
-    }
+    .btn-primary { background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); color: white; border: none; padding: 10px 22px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.9; }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 1.4rem;
-      letter-spacing: 1px;
-    }
+    /* Landing Hero Screen */
+    .landing-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 20px; flex: 1; }
+    .landing-title { font-size: 3rem; font-weight: 800; max-width: 800px; line-height: 1.2; margin-bottom: 20px; }
+    .landing-subtitle { color: var(--text-sub); max-width: 600px; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; }
 
-    .logo-icon {
-      width: 20px;
-      height: 20px;
-      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
-      transform: rotate(45deg);
-      border-radius: 4px;
-    }
+    /* Authenticated Dashboard Screen */
+    .dashboard-screen { display: flex; padding: 40px; gap: 40px; flex: 1; }
+    .sidebar { width: 320px; background-color: var(--card-bg); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px; border: 1px solid var(--border-color); height: fit-content; }
+    .user-profile { display: flex; align-items: center; gap: 16px; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; }
+    .user-info .email { font-size: 0.9rem; font-weight: 600; word-break: break-all; }
+    .user-info .role { font-size: 0.75rem; color: var(--text-sub); margin-top: 4px; }
 
-    .btn-auth {
-      background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
-      color: white;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 20px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
+    .input-group { display: flex; flex-direction: column; gap: 12px; }
+    textarea, input[type="text"] { width: 100%; background-color: #050507; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; color: white; outline: none; }
+    textarea { height: 100px; resize: none; }
 
-    .btn-auth:hover {
-      opacity: 0.9;
-    }
-
-    .container {
-      display: flex;
-      flex: 1;
-      padding: 40px;
-      gap: 40px;
-    }
-
-    .sidebar {
-      width: 320px;
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      border: 1px solid var(--border-color);
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
-    .user-info .email {
-      font-size: 0.95rem;
-      font-weight: 600;
-      word-break: break-all;
-    }
-
-    .user-info .role {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      margin-top: 4px;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .input-group label {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      background-color: #0b0b0e;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      color: white;
-      outline: none;
-    }
-
-    textarea {
-      height: 100px;
-      resize: none;
-    }
-
-    .btn-submit {
-      background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 20px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .feed {
-      flex: 1;
-    }
-
-    .feed h2 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    .feed { flex: 1; }
+    .feed h2 { font-size: 1.5rem; margin-bottom: 20px; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">
-      <div class="logo-icon"></div>
+      <div class="logo-diamond"></div>
       <span>LEGACY</span>
     </div>
-    <button id="auth-btn" class="btn-auth">Sign In / Register</button>
+    <button id="auth-btn" class="btn-primary">Sign In / Register</button>
   </header>
 
-  <div class="container">
-    <!-- User Panel / Form Sidebar -->
+  <!-- LANDING / ONBOARDING VIEW -->
+  <main id="landing-view" class="landing-screen">
+    <h1 class="landing-title">Deep Regional Context.<br>Purified for Frontier AI.</h1>
+    <p class="landing-subtitle">Legacy captures and mathematically purifies real-world observational data to train precision models.</p>
+    <button id="get-started-btn" class="btn-primary" style="padding: 14px 36px; font-size: 1rem;">Get Started</button>
+  </main>
+
+  <!-- LOGGED-IN DASHBOARD VIEW -->
+  <main id="dashboard-view" class="dashboard-screen hidden">
     <div class="sidebar">
       <div class="user-profile">
         <div id="user-avatar" class="avatar">U</div>
@@ -191,21 +76,18 @@
       </div>
 
       <div class="input-group">
-        <label>Publish New Log</label>
+        <label style="font-weight:600; font-size:0.9rem;">Publish New Log</label>
         <textarea id="field-narrative" placeholder="Field narrative..."></textarea>
         <input type="text" id="location-target" placeholder="Location target..." />
-        <button class="btn-submit">Publish Entry</button>
+        <button class="btn-primary" style="border-radius:10px;">Publish Entry</button>
       </div>
     </div>
 
-    <!-- Main Content Feed -->
     <div class="feed">
       <h2>Community Field Feed</h2>
-      <div id="feed-container">
-        <!-- Feed posts render here -->
-      </div>
+      <div id="feed-container"></div>
     </div>
-  </div>
+  </main>
 
   <script type="module" src="app.js"></script>
 </body>
