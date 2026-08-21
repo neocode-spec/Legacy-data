@@ -3,105 +3,209 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legacy Platform</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Legacy | Ground-Truth Field Intelligence</title>
+  <style>
+    :root {
+      --bg-color: #0b0b0e;
+      --card-bg: #141419;
+      --accent-purple: #d900ff;
+      --accent-pink: #ff007a;
+      --text-main: #ffffff;
+      --text-sub: #a0a0ab;
+      --border-color: #26262e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+    }
+
+    .logo-icon {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      transform: rotate(45deg);
+      border-radius: 4px;
+    }
+
+    .btn-auth {
+      background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-auth:hover {
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      padding: 40px;
+      gap: 40px;
+    }
+
+    .sidebar {
+      width: 320px;
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .user-info .email {
+      font-size: 0.95rem;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .user-info .role {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background-color: #0b0b0e;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      color: white;
+      outline: none;
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .btn-submit {
+      background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .feed {
+      flex: 1;
+    }
+
+    .feed h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- TOP NAVBAR -->
-  <header class="navbar">
-    <div class="logo">LEGACY</div>
-    <div id="nav-actions">
-      <!-- Dynamic Auth/Key status buttons injected via JS -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span>LEGACY</span>
     </div>
+    <button id="auth-btn" class="btn-auth">Sign In / Register</button>
   </header>
 
-  <!-- PAGE 1: LANDING PAGE -->
-  <section id="page-landing" class="page-view active">
-    <div class="hero">
-      <h1>Ground-Truth Field Intelligence</h1>
-      <p>Analyze datasets, draft observations with Gemini AI copilot, and share verified reports with the community.</p>
-      <button class="primary-btn" onclick="switchPage('page-auth')">Get Started</button>
-    </div>
-  </section>
-
-  <!-- PAGE 2: AUTHENTICATION PORTAL -->
-  <section id="page-auth" class="page-view">
-    <div class="auth-card">
-      <h2>Access Portal</h2>
-      <input type="email" id="auth-email" placeholder="Email Address">
-      <input type="password" id="auth-pass" placeholder="Password">
-      <div class="auth-btns">
-        <button id="btn-login" class="primary-btn">Sign In</button>
-        <button id="btn-signup" class="secondary-btn">Register</button>
+  <div class="container">
+    <!-- User Panel / Form Sidebar -->
+    <div class="sidebar">
+      <div class="user-profile">
+        <div id="user-avatar" class="avatar">U</div>
+        <div class="user-info">
+          <div id="user-email" class="email">Authenticated User</div>
+          <div class="role">Verified Field Contributor</div>
+        </div>
       </div>
-      <p class="divider">OR</p>
-      <button id="btn-google" class="google-btn">Continue with Google</button>
+
+      <div class="input-group">
+        <label>Publish New Log</label>
+        <textarea id="field-narrative" placeholder="Field narrative..."></textarea>
+        <input type="text" id="location-target" placeholder="Location target..." />
+        <button class="btn-submit">Publish Entry</button>
+      </div>
     </div>
-  </section>
 
-  <!-- PAGE 3: WORKSPACE & COMMUNITY FEED -->
-  <section id="page-app" class="page-view">
-    <div class="app-layout">
-      
-      <!-- SIDEBAR WORKSPACE: UPLOAD, AI ASSISTANT, PUBLISH -->
-      <aside class="sidebar">
-        <div class="user-profile">
-          <div id="profile-avatar" class="avatar">U</div>
-          <span id="profile-email">user@domain.com</span>
-        </div>
-
-        <hr>
-
-        <!-- 1. DATASET / DOCUMENT ATTACHMENT -->
-        <div class="upload-box">
-          <h3>1. Upload Data / Documents</h3>
-          <label class="file-label" style="display: block; cursor: pointer; padding: 10px; border: 1px dashed var(--neon-purple, #a855f7); border-radius: 8px; text-align: center;">
-            <span>📎 Select Dataset / Document</span>
-            <input type="file" id="file-input" accept=".csv, .pdf, .json, .txt, .png, .jpg" style="display: none;">
-          </label>
-          <div id="file-status" style="font-size: 12px; color: #94a3b8; margin-top: 6px;">No file loaded</div>
-        </div>
-
-        <hr>
-
-        <!-- 2. GEMINI WORKSPACE COPILOT -->
-        <div class="copilot-box">
-          <h3>✨ Gemini Workspace Assistant</h3>
-          <textarea id="ai-prompt-input" placeholder="Ask Gemini to analyze your uploaded data, summarize findings, or draft your field report..."></textarea>
-          <button id="btn-ask-gemini" class="secondary-btn" style="width: 100%; margin-top: 6px;">Ask Gemini</button>
-          
-          <div id="gemini-response-box" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; border-left: 3px solid #a855f7;">
-            <strong style="color: #a855f7; font-size: 12px;">Gemini Suggestion:</strong>
-            <p id="gemini-text" style="font-size: 13px; margin: 6px 0; white-space: pre-wrap;"></p>
-            <button id="btn-use-suggestion" class="sm-btn" style="background: #a855f7; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">Use in Entry</button>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- 3. PUBLISH FIELD ENTRY -->
-        <div class="publish-box">
-          <h3>3. Publish Entry</h3>
-          <input type="text" id="loc-text" placeholder="Target Location (e.g., Sector 4)">
-          <textarea id="obs-text" placeholder="Write final observation narrative..."></textarea>
-          <button id="save-btn" class="primary-btn" style="width: 100%; margin-top: 8px;">Publish to Community Feed</button>
-        </div>
-      </aside>
-
-      <!-- MAIN AREA: COMMUNITY READER FEED -->
-      <main class="feed-container">
-        <div class="feed-header" style="margin-bottom: 16px;">
-          <h2>Community Feed & Reader</h2>
-          <input type="text" id="search-input" placeholder="Search logs, keywords, or location..." style="width: 100%; padding: 8px; margin-top: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: #fff;">
-        </div>
-        <div id="public-feed" class="feed-list">
-          <!-- Live cards will load here -->
-        </div>
-      </main>
-
+    <!-- Main Content Feed -->
+    <div class="feed">
+      <h2>Community Field Feed</h2>
+      <div id="feed-container">
+        <!-- Feed posts render here -->
+      </div>
     </div>
-  </section>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
