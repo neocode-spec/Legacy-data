@@ -55,13 +55,17 @@ const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+const app =
+  initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth =
+  getAuth(app);
 
-const db = getFirestore(app);
+const db =
+  getFirestore(app);
 
-const provider = new GoogleAuthProvider();
+const provider =
+  new GoogleAuthProvider();
 
 provider.setCustomParameters({
   prompt: "select_account"
@@ -69,294 +73,461 @@ provider.setCustomParameters({
 
 
 /* =========================================================
-   DOM HELPER
+   DOM
 ========================================================= */
 
-function $(id) {
-  return document.getElementById(id);
+const el = id =>
+  document.getElementById(id);
+
+
+/* PUBLIC */
+
+const landingPage =
+  el("page-landing");
+
+const authPage =
+  el("page-auth");
+
+const appPage =
+  el("page-app");
+
+const navActions =
+  el("nav-actions");
+
+const navLoginButton =
+  el("nav-login-button");
+
+const heroStoriesButton =
+  el("hero-stories-button");
+
+const heroJoinButton =
+  el("hero-join-button");
+
+const builderEnterButton =
+  el("builder-enter-button");
+
+const collectorEnterButton =
+  el("collector-enter-button");
+
+const collectorStartButton =
+  el("collector-start-button");
+
+const brandHome =
+  el("brand-home");
+
+const publicSiteButton =
+  el("public-site-button");
+
+
+/* AUTH */
+
+const authName =
+  el("auth-name");
+
+const authEmail =
+  el("auth-email");
+
+const authPass =
+  el("auth-pass");
+
+const btnLogin =
+  el("btn-login");
+
+const btnSignup =
+  el("btn-signup");
+
+const btnGoogle =
+  el("btn-google");
+
+
+/* STORIES */
+
+const landingStoriesGrid =
+  el("landing-stories-grid");
+
+const authenticatedStoriesGrid =
+  el("authenticated-stories-grid");
+
+
+/* APP */
+
+const appLayout =
+  el("app-layout");
+
+const sidebarToggle =
+  el("sidebar-toggle");
+
+const profileTrigger =
+  el("profile-trigger");
+
+const sidebarAvatar =
+  el("sidebar-avatar");
+
+const sidebarName =
+  el("sidebar-name");
+
+const drawerAvatar =
+  el("drawer-avatar");
+
+const profileDrawer =
+  el("profile-drawer");
+
+const drawerBackdrop =
+  el("drawer-backdrop");
+
+const drawerClose =
+  el("drawer-close");
+
+const profileNameInput =
+  el("profile-name-input");
+
+const saveProfileName =
+  el("save-profile-name");
+
+const profileEmail =
+  el("profile-email");
+
+const profileRole =
+  el("profile-role");
+
+const drawerCollectorStatus =
+  el("drawer-collector-status");
+
+const drawerLogout =
+  el("drawer-logout");
+
+const navStories =
+  el("nav-stories");
+
+const panelStories =
+  el("panel-stories");
+
+const panelWorkstation =
+  el("panel-workstation");
+
+const becomeCollectorBtn =
+  el("become-collector-btn");
+
+const openWorkstationBtn =
+  el("open-workstation-btn");
+
+const backToStoriesBtn =
+  el("back-to-stories-btn");
+
+
+/* EDITOR */
+
+const storyTitle =
+  el("story-title");
+
+const editorDocument =
+  el("editor-document");
+
+const saveDraftBtn =
+  el("save-draft-btn");
+
+const fullscreenEditorBtn =
+  el("fullscreen-editor-btn");
+
+const purifyPublishBtn =
+  el("purify-publish-btn");
+
+const storyCategory =
+  el("story-category");
+
+const storyLocation =
+  el("story-location");
+
+const storyTopic =
+  el("story-topic");
+
+const storyDate =
+  el("story-date");
+
+
+/* PURIFICATION */
+
+const purificationStatus =
+  el("purification-status");
+
+const purificationResult =
+  el("purification-result");
+
+const purificationScore =
+  el("purification-score");
+
+
+/* =========================================================
+   VIEW CONTROLLER
+========================================================= */
+
+function showView(
+  view
+) {
+
+  [
+    landingPage,
+    authPage,
+    appPage
+  ].forEach(
+    page => {
+
+      if (!page)
+        return;
+
+      page.classList.remove(
+        "active"
+      );
+
+    }
+  );
+
+
+  if (view) {
+
+    view.classList.add(
+      "active"
+    );
+
+  }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+function showLanding() {
+  showView(
+    landingPage
+  );
+}
+
+
+function showAuth() {
+  showView(
+    authPage
+  );
+}
+
+
+function showApp() {
+  showView(
+    appPage
+  );
 }
 
 
 /* =========================================================
-   AUTH ELEMENTS
+   NAVIGATION BUTTONS
 ========================================================= */
 
-const navActions = $("nav-actions");
-const authName = $("auth-name");
-const authEmail = $("auth-email");
-const authPass = $("auth-pass");
-const btnLogin = $("btn-login");
-const btnSignup = $("btn-signup");
-const btnGoogle = $("btn-google");
+navLoginButton?.addEventListener(
+  "click",
+  () => {
 
+    if (auth.currentUser) {
 
-/* =========================================================
-   APP ELEMENTS
-========================================================= */
+      showApp();
 
-const landingStoriesGrid =
-  $("landing-stories-grid");
+    }
+    else {
 
-const authenticatedStoriesGrid =
-  $("authenticated-stories-grid");
+      showAuth();
 
-const sidebarAvatar =
-  $("sidebar-avatar");
+    }
 
-const sidebarEmail =
-  $("sidebar-email");
-
-const profileEmail =
-  $("profile-email");
-
-const profileRole =
-  $("profile-role");
-
-const drawerAvatar =
-  $("drawer-avatar");
-
-const drawerCollectorStatus =
-  $("drawer-collector-status");
-
-const profileNameInput =
-  $("profile-name-input");
-
-const saveProfileName =
-  $("save-profile-name");
-
-const drawerLogout =
-  $("drawer-logout");
-
-const profileTrigger =
-  $("profile-trigger");
-
-const profileDrawer =
-  $("profile-drawer");
-
-const drawerBackdrop =
-  $("drawer-backdrop");
-
-const drawerClose =
-  $("drawer-close");
-
-const sidebarToggle =
-  $("sidebar-toggle");
-
-const appLayout =
-  $("app-layout");
-
-const becomeCollectorBtn =
-  $("become-collector-btn");
-
-const openWorkstationBtn =
-  $("open-workstation-btn");
-
-const navStories =
-  $("nav-stories");
-
-const panelStories =
-  $("panel-stories");
-
-const panelWorkstation =
-  $("panel-workstation");
-
-const backToStoriesBtn =
-  $("back-to-stories-btn");
-
-
-/* =========================================================
-   WORKSTATION
-========================================================= */
-
-const storyTitle =
-  $("story-title");
-
-const storyCategory =
-  $("story-category");
-
-const storyLocation =
-  $("story-location");
-
-const storyTopic =
-  $("story-topic");
-
-const storyDate =
-  $("story-date");
-
-const editorDocument =
-  $("editor-document");
-
-const saveDraftBtn =
-  $("save-draft-btn");
-
-const purifyPublishBtn =
-  $("purify-publish-btn");
-
-const fullscreenEditorBtn =
-  $("fullscreen-editor-btn");
-
-const purificationStatus =
-  $("purification-status");
-
-const purificationResult =
-  $("purification-result");
-
-const purificationScore =
-  $("purification-score");
-
-
-/* =========================================================
-   INTERNAL FORMULA
-========================================================= */
-
-const paramC =
-  $("param-c");
-
-const paramB =
-  $("param-b");
-
-const paramR =
-  $("param-r");
-
-const paramG =
-  $("param-g");
-
-const paramI =
-  $("param-i");
-
-const paramConfirm =
-  $("param-confirm");
-
-const paramContra =
-  $("param-contra");
-
-
-/* =========================================================
-   STATE
-========================================================= */
-
-let latestStories = [];
-
-let savedSelection = null;
-
-
-/* =========================================================
-   FALLBACK STORIES
-========================================================= */
-
-const fallbackStories = [
-
-  {
-    title:
-      "Riverine and upland communities can experience the same transport system very differently.",
-
-    summary:
-      "Field observations can reveal differences in movement patterns, transport access and local operating conditions between riverine and mainland environments.",
-
-    category:
-      "Logistics",
-
-    location:
-      "Rivers State · Nigeria",
-
-    status:
-      "PURIFIED"
-  },
-
-  {
-    title:
-      "Local pricing decisions can contain context that formal datasets miss.",
-
-    summary:
-      "Vendor conversations and field observations can connect price movement to supply, availability, transportation and local purchasing behavior.",
-
-    category:
-      "Commerce",
-
-    location:
-      "Nigeria · Commerce",
-
-    status:
-      "PURIFIED"
-  },
-
-  {
-    title:
-      "Infrastructure on a map is not always the same as infrastructure in use.",
-
-    summary:
-      "Field intelligence connects physical infrastructure with how people actually interact with roads, services, spaces and local systems.",
-
-    category:
-      "Infrastructure",
-
-    location:
-      "Nigeria · Infrastructure",
-
-    status:
-      "PURIFIED"
-  },
-
-  {
-    title:
-      "Local behavior often makes sense only when its surrounding context is known.",
-
-    summary:
-      "Conversations and observations can expose trust patterns, informal expectations and social reasoning that broad datasets may flatten away.",
-
-    category:
-      "Culture",
-
-    location:
-      "Nigeria · Social context",
-
-    status:
-      "PURIFIED"
-  },
-
-  {
-    title:
-      "Geography changes the context of what people observe.",
-
-    summary:
-      "A field observation carries its geographic context with it. Riverine, transitional and upland environments can produce different perspectives on the same issue.",
-
-    category:
-      "Environment",
-
-    location:
-      "Rivers State · Field context",
-
-    status:
-      "PURIFIED"
-  },
-
-  {
-    title:
-      "The strongest intelligence often starts as an ordinary conversation.",
-
-    summary:
-      "Legacy preserves the raw observation, applies structured reasoning, and turns the resulting pattern into digestible intelligence.",
-
-    category:
-      "Field Notes",
-
-    location:
-      "Nigeria · Field research",
-
-    status:
-      "PURIFIED"
   }
+);
 
-];
+
+heroJoinButton?.addEventListener(
+  "click",
+  () => {
+
+    if (auth.currentUser) {
+
+      showApp();
+
+    }
+    else {
+
+      showAuth();
+
+    }
+
+  }
+);
+
+
+heroStoriesButton?.addEventListener(
+  "click",
+  () => {
+
+    document
+      .getElementById(
+        "stories"
+      )
+      ?.scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
+);
+
+
+builderEnterButton?.addEventListener(
+  "click",
+  () => {
+
+    if (auth.currentUser) {
+
+      showApp();
+
+    }
+    else {
+
+      showAuth();
+
+    }
+
+  }
+);
+
+
+collectorEnterButton?.addEventListener(
+  "click",
+  () => {
+
+    if (auth.currentUser) {
+
+      showApp();
+
+    }
+    else {
+
+      showAuth();
+
+    }
+
+  }
+);
+
+
+collectorStartButton?.addEventListener(
+  "click",
+  () => {
+
+    if (auth.currentUser) {
+
+      openWorkstation();
+
+    }
+    else {
+
+      showAuth();
+
+    }
+
+  }
+);
+
+
+brandHome?.addEventListener(
+  "click",
+  event => {
+
+    event.preventDefault();
+
+    showLanding();
+
+  }
+);
+
+
+publicSiteButton?.addEventListener(
+  "click",
+  showLanding
+);
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    /*
+      THIS IS NOW THE ONLY PLACE THAT DECIDES
+      WHETHER THE USER IS INSIDE THE APP.
+    */
+
+    if (user) {
+
+      console.log(
+        "[Legacy] Authenticated:",
+        user.email
+      );
+
+
+      /*
+        Directly activate the application.
+        No dependency on inline switchPage.
+      */
+
+      showApp();
+
+
+      updateUserIdentity(
+        user
+      );
+
+
+      renderLoggedInNav();
+
+
+      updateCollectorUI();
+
+
+      await loadStories();
+
+    }
+
+    else {
+
+      console.log(
+        "[Legacy] Logged out"
+      );
+
+
+      showLanding();
+
+
+      renderLoggedOutNav();
+
+
+      await loadStories();
+
+    }
+
+  }
+);
 
 
 /* =========================================================
    GOOGLE REDIRECT RESULT
 ========================================================= */
 
-getRedirectResult(auth)
-  .then((result) => {
+getRedirectResult(
+  auth
+)
+.then(
+  result => {
 
     if (result?.user) {
 
@@ -366,274 +537,21 @@ getRedirectResult(auth)
 
     }
 
-  })
-  .catch((error) => {
+  }
+)
+.catch(
+  error => {
 
     console.error(
-      "[Legacy] Redirect result:",
+      "[Legacy] Google redirect:",
       error
     );
 
-  });
-
-
-/* =========================================================
-   AUTH STATE
-   THIS IS THE IMPORTANT FIX.
-========================================================= */
-
-onAuthStateChanged(
-  auth,
-  async (user) => {
-
-    if (user) {
-
-      /*
-        Firebase says the user is logged in.
-        NOW explicitly switch the application
-        from landing/auth to the authenticated app.
-      */
-
-      if (
-        typeof window.switchPage ===
-        "function"
-      ) {
-
-        window.switchPage(
-          "page-app"
-        );
-
-      }
-
-
-      updateIdentity(user);
-
-      renderAuthenticatedNavigation();
-
-      setupCollectorState();
-
-      showStoriesPanel();
-
-      await loadStories();
-
-    }
-
-    else {
-
-      if (
-        typeof window.switchPage ===
-        "function"
-      ) {
-
-        window.switchPage(
-          "page-landing"
-        );
-
-      }
-
-
-      renderLoggedOutNavigation();
-
-      await loadStories();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   DISPLAY NAME
-========================================================= */
-
-function getDisplayName(user) {
-
-  if (
-    user?.displayName &&
-    user.displayName.trim()
-  ) {
-
-    return user.displayName.trim();
-
-  }
-
-
-  if (user?.email) {
-
-    const localPart =
-      user.email.split("@")[0];
-
-    if (localPart) {
-
-      return capitalizeName(
-        localPart
-      );
-
-    }
-
-  }
-
-
-  return "User";
-
-}
-
-
-function capitalizeName(value) {
-
-  return value
-    .replace(
-      /[._-]+/g,
-      " "
-    )
-    .replace(
-      /\b\w/g,
-      char =>
-        char.toUpperCase()
-    );
-
-}
-
-
-/* =========================================================
-   UPDATE IDENTITY
-========================================================= */
-
-function updateIdentity(user) {
-
-  const name =
-    getDisplayName(user);
-
-
-  const initial =
-    name.charAt(0).toUpperCase();
-
-
-  if (sidebarAvatar) {
-
-    sidebarAvatar.textContent =
-      initial;
-
-  }
-
-
-  if (drawerAvatar) {
-
-    drawerAvatar.textContent =
-      initial;
-
-  }
-
-
-  if (sidebarEmail) {
-
-    sidebarEmail.textContent =
-      name;
-
-  }
-
-
-  if (profileNameInput) {
-
-    profileNameInput.value =
-      name;
-
-  }
-
-
-  if (profileEmail) {
-
-    profileEmail.textContent =
-      user.email ||
-      "Authenticated user";
-
-  }
-
-
-  if (profileRole) {
-
-    profileRole.textContent =
-      isCollector()
-        ? "Legacy Data Collector"
-        : "Legacy Reader";
-
-  }
-
-
-  updateDrawerCollectorState();
-
-}
-
-
-/* =========================================================
-   PROFILE NAME
-========================================================= */
-
-saveProfileName?.addEventListener(
-  "click",
-  async () => {
-
-    const user =
-      auth.currentUser;
-
-
-    if (!user) {
-
-      showToast(
-        "You are not signed in."
-      );
-
-      return;
-
-    }
-
-
-    const name =
-      profileNameInput?.value.trim();
-
-
-    if (!name) {
-
-      showToast(
-        "Enter a name first."
-      );
-
-      return;
-
-    }
-
-
-    try {
-
-      await updateProfile(
-        user,
-        {
-          displayName:
-            name
-        }
-      );
-
-
-      updateIdentity(user);
-
-
-      showToast(
-        "Name updated."
-      );
-
-    }
-    catch (error) {
-
-      console.error(
+    showToast(
+      friendlyAuthError(
         error
-      );
-
-
-      showToast(
-        "Could not update your name."
-      );
-
-    }
+      )
+    );
 
   }
 );
@@ -643,18 +561,17 @@ saveProfileName?.addEventListener(
    LOGGED-IN NAV
 ========================================================= */
 
-function renderAuthenticatedNavigation() {
+function renderLoggedInNav() {
 
-  if (!navActions) {
+  if (!navActions)
     return;
-  }
 
 
   navActions.innerHTML = `
 
     <button
+      id="logout-button"
       class="nav-btn"
-      id="logout-btn"
       type="button"
     >
       Log Out
@@ -663,20 +580,24 @@ function renderAuthenticatedNavigation() {
   `;
 
 
-  $("logout-btn")?.addEventListener(
+  el(
+    "logout-button"
+  )?.addEventListener(
     "click",
     async () => {
 
       try {
 
-        await signOut(auth);
-
-        showToast(
-          "Logged out."
+        await signOut(
+          auth
         );
 
+        showLanding();
+
       }
-      catch (error) {
+      catch (
+        error
+      ) {
 
         console.error(
           error
@@ -690,27 +611,31 @@ function renderAuthenticatedNavigation() {
 }
 
 
-/* =========================================================
-   LOGGED-OUT NAV
-========================================================= */
+function renderLoggedOutNav() {
 
-function renderLoggedOutNavigation() {
-
-  if (!navActions) {
+  if (!navActions)
     return;
-  }
 
 
   navActions.innerHTML = `
 
     <button
+      id="nav-login-button-new"
       class="nav-btn"
-      onclick="switchPage('page-auth')"
+      type="button"
     >
       Sign In / Register
     </button>
 
   `;
+
+
+  el(
+    "nav-login-button-new"
+  )?.addEventListener(
+    "click",
+    () => showAuth()
+  );
 
 }
 
@@ -750,21 +675,24 @@ btnLogin?.addEventListener(
       );
 
       /*
-        onAuthStateChanged will automatically
-        move the user into page-app.
+        onAuthStateChanged()
+        moves the user to page-app.
       */
 
     }
-    catch (error) {
+    catch (
+      error
+    ) {
 
       console.error(
-        "[Legacy] Login error:",
+        "[Legacy] Login:",
         error
       );
 
-
       showToast(
-        friendlyAuthError(error)
+        friendlyAuthError(
+          error
+        )
       );
 
     }
@@ -774,7 +702,7 @@ btnLogin?.addEventListener(
 
 
 /* =========================================================
-   EMAIL REGISTER
+   EMAIL SIGNUP
 ========================================================= */
 
 btnSignup?.addEventListener(
@@ -794,7 +722,7 @@ btnSignup?.addEventListener(
     if (!name) {
 
       showToast(
-        "Enter your name first."
+        "Enter your name."
       );
 
       return;
@@ -843,27 +771,29 @@ btnSignup?.addEventListener(
       );
 
 
-      updateIdentity(
+      updateUserIdentity(
         credentials.user
       );
 
 
       /*
-        onAuthStateChanged will now
-        switch to page-app.
+        Auth state listener opens app.
       */
 
     }
-    catch (error) {
+    catch (
+      error
+    ) {
 
       console.error(
-        "[Legacy] Registration error:",
+        "[Legacy] Signup:",
         error
       );
 
-
       showToast(
-        friendlyAuthError(error)
+        friendlyAuthError(
+          error
+        )
       );
 
     }
@@ -882,28 +812,18 @@ btnGoogle?.addEventListener(
 
     try {
 
-      provider.setCustomParameters({
-        prompt:
-          "select_account"
-      });
-
-
       await signInWithPopup(
         auth,
         provider
       );
 
-
-      /*
-        DO NOT manually switch pages here.
-        Firebase auth state handles it.
-      */
-
     }
-    catch (error) {
+    catch (
+      error
+    ) {
 
       console.error(
-        "[Legacy] Google sign-in:",
+        "[Legacy] Google:",
         error
       );
 
@@ -933,12 +853,13 @@ btnGoogle?.addEventListener(
           );
 
         }
-        catch (redirectError) {
+        catch (
+          redirectError
+        ) {
 
           console.error(
             redirectError
           );
-
 
           showToast(
             friendlyAuthError(
@@ -947,7 +868,6 @@ btnGoogle?.addEventListener(
           );
 
         }
-
 
         return;
 
@@ -964,6 +884,100 @@ btnGoogle?.addEventListener(
 
   }
 );
+
+
+/* =========================================================
+   USER IDENTITY
+========================================================= */
+
+function getUserName(
+  user
+) {
+
+  if (
+    user?.displayName &&
+    user.displayName.trim()
+  ) {
+
+    return user.displayName.trim();
+
+  }
+
+
+  if (user?.email) {
+
+    return user
+      .email
+      .split("@")[0]
+      .replace(
+        /[._-]+/g,
+        " "
+      )
+      .replace(
+        /\b\w/g,
+        char =>
+          char.toUpperCase()
+      );
+
+  }
+
+
+  return "User";
+
+}
+
+
+function updateUserIdentity(
+  user
+) {
+
+  const name =
+    getUserName(
+      user
+    );
+
+
+  const initial =
+    name.charAt(0)
+      .toUpperCase();
+
+
+  if (sidebarAvatar)
+    sidebarAvatar.textContent =
+      initial;
+
+
+  if (drawerAvatar)
+    drawerAvatar.textContent =
+      initial;
+
+
+  if (sidebarName)
+    sidebarName.textContent =
+      name;
+
+
+  if (profileNameInput)
+    profileNameInput.value =
+      name;
+
+
+  if (profileEmail)
+    profileEmail.textContent =
+      user.email ||
+      "Authenticated user";
+
+
+  if (profileRole)
+    profileRole.textContent =
+      isCollector()
+        ? "Legacy Data Collector"
+        : "Legacy Reader";
+
+
+  updateDrawerCollectorState();
+
+}
 
 
 /* =========================================================
@@ -1015,17 +1029,78 @@ drawerLogout?.addEventListener(
   "click",
   async () => {
 
-    try {
+    await signOut(
+      auth
+    );
 
-      await signOut(auth);
+    closeProfile();
 
-      closeProfile();
+  }
+);
+
+
+/* =========================================================
+   PROFILE NAME
+========================================================= */
+
+saveProfileName?.addEventListener(
+  "click",
+  async () => {
+
+    const user =
+      auth.currentUser;
+
+
+    if (!user)
+      return;
+
+
+    const name =
+      profileNameInput?.value.trim();
+
+
+    if (!name) {
+
+      showToast(
+        "Enter your name."
+      );
+
+      return;
 
     }
-    catch (error) {
+
+
+    try {
+
+      await updateProfile(
+        user,
+        {
+          displayName:
+            name
+        }
+      );
+
+
+      updateUserIdentity(
+        user
+      );
+
+
+      showToast(
+        "Name updated."
+      );
+
+    }
+    catch (
+      error
+    ) {
 
       console.error(
         error
+      );
+
+      showToast(
+        "Could not update your name."
       );
 
     }
@@ -1035,37 +1110,33 @@ drawerLogout?.addEventListener(
 
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR COLLAPSE
 ========================================================= */
 
 sidebarToggle?.addEventListener(
   "click",
-  () => {
+  event => {
 
-    if (!appLayout) {
-      return;
-    }
+    event.preventDefault();
+    event.stopPropagation();
 
 
-    const closed =
-      appLayout.classList.toggle(
+    const isClosed =
+      appLayout?.classList.toggle(
         "sidebar-closed"
       );
 
 
-    if (sidebarToggle) {
+    sidebarToggle.textContent =
+      isClosed
+        ? "›"
+        : "‹";
 
-      sidebarToggle.textContent =
-        closed
-          ? "›"
-          : "‹";
 
-      sidebarToggle.title =
-        closed
-          ? "Open sidebar"
-          : "Collapse sidebar";
-
-    }
+    sidebarToggle.title =
+      isClosed
+        ? "Open sidebar"
+        : "Collapse sidebar";
 
   }
 );
@@ -1077,18 +1148,17 @@ sidebarToggle?.addEventListener(
 
 function collectorKey() {
 
-  const user =
-    auth.currentUser;
+  const uid =
+    auth.currentUser?.uid;
 
 
-  if (!user) {
+  if (!uid)
     return null;
-  }
 
 
   return (
     "legacy_collector_" +
-    user.uid
+    uid
   );
 
 }
@@ -1100,9 +1170,8 @@ function isCollector() {
     collectorKey();
 
 
-  if (!key) {
+  if (!key)
     return false;
-  }
 
 
   return (
@@ -1114,7 +1183,7 @@ function isCollector() {
 }
 
 
-function setupCollectorState() {
+function updateCollectorUI() {
 
   const active =
     isCollector();
@@ -1140,6 +1209,16 @@ function setupCollectorState() {
   }
 
 
+  if (profileRole) {
+
+    profileRole.textContent =
+      active
+        ? "Legacy Data Collector"
+        : "Legacy Reader";
+
+  }
+
+
   updateDrawerCollectorState();
 
 }
@@ -1147,9 +1226,8 @@ function setupCollectorState() {
 
 function updateDrawerCollectorState() {
 
-  if (!drawerCollectorStatus) {
+  if (!drawerCollectorStatus)
     return;
-  }
 
 
   drawerCollectorStatus.textContent =
@@ -1164,11 +1242,13 @@ becomeCollectorBtn?.addEventListener(
   "click",
   () => {
 
-    if (!auth.currentUser) {
+    const user =
+      auth.currentUser;
 
-      window.switchPage(
-        "page-auth"
-      );
+
+    if (!user) {
+
+      showAuth();
 
       return;
 
@@ -1179,9 +1259,8 @@ becomeCollectorBtn?.addEventListener(
       collectorKey();
 
 
-    if (!key) {
+    if (!key)
       return;
-    }
 
 
     localStorage.setItem(
@@ -1190,11 +1269,11 @@ becomeCollectorBtn?.addEventListener(
     );
 
 
-    setupCollectorState();
+    updateCollectorUI();
 
 
     showToast(
-      "Data Collector access activated."
+      "Data Collector activated."
     );
 
 
@@ -1214,25 +1293,37 @@ openWorkstationBtn?.addEventListener(
    WORKSPACE
 ========================================================= */
 
-backToStoriesBtn?.addEventListener(
-  "click",
-  showStoriesPanel
-);
+function showStories() {
+
+  if (!panelStories ||
+      !panelWorkstation) {
+
+    return;
+
+  }
 
 
-navStories?.addEventListener(
-  "click",
-  showStoriesPanel
-);
+  panelStories.classList.add(
+    "active"
+  );
+
+  panelWorkstation.classList.remove(
+    "active"
+  );
+
+
+  navStories?.classList.add(
+    "active"
+  );
+
+}
 
 
 function openWorkstation() {
 
   if (!auth.currentUser) {
 
-    window.switchPage(
-      "page-auth"
-    );
+    showAuth();
 
     return;
 
@@ -1242,7 +1333,7 @@ function openWorkstation() {
   if (!isCollector()) {
 
     showToast(
-      "Become a Data Collector first."
+      "Activate Data Collector first."
     );
 
     return;
@@ -1250,8 +1341,18 @@ function openWorkstation() {
   }
 
 
-  switchPanel(
-    panelWorkstation
+  panelStories?.classList.remove(
+    "active"
+  );
+
+
+  panelWorkstation?.classList.add(
+    "active"
+  );
+
+
+  navStories?.classList.remove(
+    "active"
   );
 
 
@@ -1260,66 +1361,59 @@ function openWorkstation() {
 }
 
 
-function showStoriesPanel() {
-
-  switchPanel(
-    panelStories
-  );
-
-
-  loadStories();
-
-}
+navStories?.addEventListener(
+  "click",
+  showStories
+);
 
 
-function switchPanel(panel) {
-
-  document
-    .querySelectorAll(
-      ".workspace-panel"
-    )
-    .forEach(
-      item =>
-        item.classList.remove(
-          "active"
-        )
-    );
+backToStoriesBtn?.addEventListener(
+  "click",
+  showStories
+);
 
 
-  panel?.classList.add(
-    "active"
-  );
+/* =========================================================
+   DISABLED SECTIONS
+========================================================= */
+
+el(
+  "saved-stories-button"
+)?.addEventListener(
+  "click",
+  () => showToast(
+    "Saved Stories is coming next."
+  )
+);
 
 
-  document
-    .querySelectorAll(
-      ".sidebar-action"
-    )
-    .forEach(
-      item =>
-        item.classList.remove(
-          "active"
-        )
-    );
+el(
+  "datasets-button"
+)?.addEventListener(
+  "click",
+  () => showToast(
+    "Datasets are coming next."
+  )
+);
 
 
-  if (
-    panel === panelStories &&
-    navStories
-  ) {
-
-    navStories.classList.add(
-      "active"
-    );
-
-  }
-
-}
+el(
+  "builder-button"
+)?.addEventListener(
+  "click",
+  () => showToast(
+    "Builder tools are coming next."
+  )
+);
 
 
 /* =========================================================
    EDITOR SELECTION
 ========================================================= */
+
+let savedRange =
+  null;
+
 
 function saveSelection() {
 
@@ -1329,7 +1423,7 @@ function saveSelection() {
 
   if (
     !selection ||
-    selection.rangeCount === 0 ||
+    !selection.rangeCount ||
     !editorDocument
   ) {
 
@@ -1350,7 +1444,7 @@ function saveSelection() {
     )
   ) {
 
-    savedSelection =
+    savedRange =
       range.cloneRange();
 
   }
@@ -1360,10 +1454,7 @@ function saveSelection() {
 
 function restoreSelection() {
 
-  if (
-    !savedSelection ||
-    !editorDocument
-  ) {
+  if (!savedRange) {
 
     editorDocument?.focus();
 
@@ -1378,9 +1469,11 @@ function restoreSelection() {
 
   selection.removeAllRanges();
 
+
   selection.addRange(
-    savedSelection
+    savedRange
   );
+
 
   editorDocument.focus();
 
@@ -1405,14 +1498,8 @@ editorDocument?.addEventListener(
 );
 
 
-editorDocument?.addEventListener(
-  "focus",
-  saveSelection
-);
-
-
 /* =========================================================
-   WORD TOOLS
+   WORD TOOLBAR
 ========================================================= */
 
 document
@@ -1447,11 +1534,14 @@ document
   );
 
 
-$("font-family")?.addEventListener(
+el(
+  "font-family"
+)?.addEventListener(
   "change",
   event => {
 
     restoreSelection();
+
 
     document.execCommand(
       "fontName",
@@ -1459,17 +1549,21 @@ $("font-family")?.addEventListener(
       event.target.value
     );
 
+
     saveSelection();
 
   }
 );
 
 
-$("font-size")?.addEventListener(
+el(
+  "font-size"
+)?.addEventListener(
   "change",
   event => {
 
     restoreSelection();
+
 
     document.execCommand(
       "fontSize",
@@ -1477,17 +1571,21 @@ $("font-size")?.addEventListener(
       event.target.value
     );
 
+
     saveSelection();
 
   }
 );
 
 
-$("text-color")?.addEventListener(
+el(
+  "text-color"
+)?.addEventListener(
   "input",
   event => {
 
     restoreSelection();
+
 
     document.execCommand(
       "foreColor",
@@ -1495,23 +1593,28 @@ $("text-color")?.addEventListener(
       event.target.value
     );
 
+
     saveSelection();
 
   }
 );
 
 
-$("highlight-color")?.addEventListener(
+el(
+  "highlight-color"
+)?.addEventListener(
   "input",
   event => {
 
     restoreSelection();
+
 
     document.execCommand(
       "hiliteColor",
       false,
       event.target.value
     );
+
 
     saveSelection();
 
@@ -1523,61 +1626,68 @@ $("highlight-color")?.addEventListener(
    HEADINGS
 ========================================================= */
 
-$("heading-one")?.addEventListener(
+function formatBlock(
+  tag
+) {
+
+  restoreSelection();
+
+
+  document.execCommand(
+    "formatBlock",
+    false,
+    tag
+  );
+
+
+  saveSelection();
+
+}
+
+
+el(
+  "heading-one"
+)?.addEventListener(
   "mousedown",
   event => {
 
     event.preventDefault();
 
-    restoreSelection();
-
-    document.execCommand(
-      "formatBlock",
-      false,
+    formatBlock(
       "h1"
     );
 
-    saveSelection();
-
   }
 );
 
 
-$("heading-two")?.addEventListener(
+el(
+  "heading-two"
+)?.addEventListener(
   "mousedown",
   event => {
 
     event.preventDefault();
 
-    restoreSelection();
-
-    document.execCommand(
-      "formatBlock",
-      false,
+    formatBlock(
       "h2"
     );
 
-    saveSelection();
-
   }
 );
 
 
-$("blockquote-tool")?.addEventListener(
+el(
+  "blockquote-tool"
+)?.addEventListener(
   "mousedown",
   event => {
 
     event.preventDefault();
 
-    restoreSelection();
-
-    document.execCommand(
-      "formatBlock",
-      false,
+    formatBlock(
       "blockquote"
     );
-
-    saveSelection();
 
   }
 );
@@ -1587,24 +1697,26 @@ $("blockquote-tool")?.addEventListener(
    LINK
 ========================================================= */
 
-$("insert-link")?.addEventListener(
+el(
+  "insert-link"
+)?.addEventListener(
   "mousedown",
   event => {
 
     event.preventDefault();
+
 
     restoreSelection();
 
 
     const url =
       window.prompt(
-        "Enter the URL:"
+        "Enter URL:"
       );
 
 
-    if (!url) {
+    if (!url)
       return;
-    }
 
 
     document.execCommand(
@@ -1624,14 +1736,16 @@ $("insert-link")?.addEventListener(
    TABLE
 ========================================================= */
 
-$("insert-table")?.addEventListener(
+el(
+  "insert-table"
+)?.addEventListener(
   "click",
   () => {
 
     const rows =
       Number(
         window.prompt(
-          "Number of rows:",
+          "Rows:",
           "3"
         )
       );
@@ -1640,7 +1754,7 @@ $("insert-table")?.addEventListener(
     const columns =
       Number(
         window.prompt(
-          "Number of columns:",
+          "Columns:",
           "3"
         )
       );
@@ -1652,7 +1766,9 @@ $("insert-table")?.addEventListener(
       rows < 1 ||
       columns < 1
     ) {
+
       return;
+
     }
 
 
@@ -1662,16 +1778,16 @@ $("insert-table")?.addEventListener(
       );
 
 
-    const tbody =
+    const body =
       document.createElement(
         "tbody"
       );
 
 
     for (
-      let r = 0;
-      r < rows;
-      r++
+      let row = 0;
+      row < rows;
+      row++
     ) {
 
       const tr =
@@ -1681,22 +1797,22 @@ $("insert-table")?.addEventListener(
 
 
       for (
-        let c = 0;
-        c < columns;
-        c++
+        let col = 0;
+        col < columns;
+        col++
       ) {
 
         const cell =
           document.createElement(
-            r === 0
+            row === 0
               ? "th"
               : "td"
           );
 
 
         cell.textContent =
-          r === 0
-            ? `Column ${c + 1}`
+          row === 0
+            ? `Column ${col + 1}`
             : "Enter data";
 
 
@@ -1711,7 +1827,7 @@ $("insert-table")?.addEventListener(
       }
 
 
-      tbody.appendChild(
+      body.appendChild(
         tr
       );
 
@@ -1719,11 +1835,8 @@ $("insert-table")?.addEventListener(
 
 
     table.appendChild(
-      tbody
+      body
     );
-
-
-    restoreSelection();
 
 
     editorDocument?.appendChild(
@@ -1749,15 +1862,14 @@ fullscreenEditorBtn?.addEventListener(
   "click",
   () => {
 
-    document.body.classList.toggle(
-      "editor-fullscreen"
-    );
+    const active =
+      document.body.classList.toggle(
+        "editor-fullscreen"
+      );
 
 
     fullscreenEditorBtn.textContent =
-      document.body.classList.contains(
-        "editor-fullscreen"
-      )
+      active
         ? "Exit Fullscreen"
         : "Fullscreen";
 
@@ -1768,6 +1880,74 @@ fullscreenEditorBtn?.addEventListener(
 /* =========================================================
    DRAFT
 ========================================================= */
+
+function draftKey() {
+
+  return (
+    "legacy_draft_" +
+    (
+      auth.currentUser?.uid ||
+      "guest"
+    )
+  );
+
+}
+
+
+function loadDraft() {
+
+  const raw =
+    localStorage.getItem(
+      draftKey()
+    );
+
+
+  if (!raw) {
+
+    if (storyDate) {
+
+      storyDate.value =
+        today();
+
+    }
+
+    return;
+
+  }
+
+
+  try {
+
+    const draft =
+      JSON.parse(
+        raw
+      );
+
+
+    if (storyTitle)
+      storyTitle.value =
+        draft.title ||
+        "";
+
+
+    if (editorDocument)
+      editorDocument.innerHTML =
+        draft.content ||
+        "";
+
+
+  }
+  catch (error) {
+
+    console.warn(
+      "Draft error:",
+      error
+    );
+
+  }
+
+}
+
 
 saveDraftBtn?.addEventListener(
   "click",
@@ -1805,73 +1985,8 @@ saveDraftBtn?.addEventListener(
 );
 
 
-function draftKey() {
-
-  return (
-    "legacy_document_draft_" +
-    (
-      auth.currentUser?.uid ||
-      "guest"
-    )
-  );
-
-}
-
-
-function loadDraft() {
-
-  const raw =
-    localStorage.getItem(
-      draftKey()
-    );
-
-
-  if (!raw) {
-
-    if (storyDate) {
-      storyDate.value =
-        today();
-    }
-
-    return;
-
-  }
-
-
-  try {
-
-    const draft =
-      JSON.parse(raw);
-
-
-    if (storyTitle) {
-      storyTitle.value =
-        draft.title ||
-        "";
-    }
-
-
-    if (editorDocument) {
-      editorDocument.innerHTML =
-        draft.content ||
-        "";
-    }
-
-  }
-  catch (error) {
-
-    console.warn(
-      "[Legacy] Draft load failed:",
-      error
-    );
-
-  }
-
-}
-
-
 /* =========================================================
-   PURIFY & PUBLISH
+   PURIFY + PUBLISH
 ========================================================= */
 
 purifyPublishBtn?.addEventListener(
@@ -1881,8 +1996,10 @@ purifyPublishBtn?.addEventListener(
     if (!auth.currentUser) {
 
       showToast(
-        "You must be logged in."
+        "You are not logged in."
       );
+
+      showAuth();
 
       return;
 
@@ -1892,7 +2009,7 @@ purifyPublishBtn?.addEventListener(
     if (!isCollector()) {
 
       showToast(
-        "Become a Data Collector first."
+        "Activate Data Collector first."
       );
 
       return;
@@ -1926,7 +2043,7 @@ purifyPublishBtn?.addEventListener(
     if (!bodyText) {
 
       showToast(
-        "Write the Story first."
+        "Write your Story first."
       );
 
       return;
@@ -1934,7 +2051,7 @@ purifyPublishBtn?.addEventListener(
     }
 
 
-    await runPurification({
+    await purifyAndPublish({
       title,
       bodyText,
       bodyHtml
@@ -1948,7 +2065,7 @@ purifyPublishBtn?.addEventListener(
    PURIFICATION
 ========================================================= */
 
-async function runPurification(
+async function purifyAndPublish(
   payload
 ) {
 
@@ -1965,67 +2082,59 @@ async function runPurification(
   resetProcessing();
 
 
-  markProcessing(
+  await processingStep(
     1,
-    "✓ Capturing raw record"
+    "✓ Capturing raw record",
+    350
   );
 
 
-  await sleep(400);
-
-
-  markProcessing(
+  await processingStep(
     2,
-    "✓ Checking metadata"
+    "✓ Checking metadata",
+    350
   );
 
 
   const parameters =
-    deriveInternalParameters(
+    internalParameters(
       payload
     );
 
 
-  await sleep(500);
-
-
-  markProcessing(
+  await processingStep(
     3,
-    "✓ Running Legacy reasoning"
+    "✓ Running Legacy reasoning",
+    500
   );
 
 
-  await sleep(650);
-
-
   const result =
-    calculateFormula(
+    calculateLegacyFormula(
       parameters
     );
 
 
-  await sleep(450);
-
-
-  markProcessing(
+  await processingStep(
     4,
-    "✓ Validating"
+    "✓ Validating",
+    450
   );
 
 
-  await sleep(450);
-
-
-  markProcessing(
+  await processingStep(
     5,
-    "✓ Building Story"
+    "✓ Building Story",
+    450
   );
 
 
   if (purificationScore) {
 
     purificationScore.textContent =
-      result.F.toFixed(3);
+      result.F.toFixed(
+        3
+      );
 
   }
 
@@ -2043,15 +2152,46 @@ async function runPurification(
 }
 
 
+async function processingStep(
+  number,
+  text,
+  wait
+) {
+
+  const item =
+    el(
+      `processing-${number}`
+    );
+
+
+  if (item) {
+
+    item.textContent =
+      text;
+
+    item.classList.add(
+      "done"
+    );
+
+  }
+
+
+  await sleep(
+    wait
+  );
+
+}
+
+
 /* =========================================================
    INTERNAL PARAMETERS
 ========================================================= */
 
-function deriveInternalParameters(
+function internalParameters(
   payload
 ) {
 
-  const wordCount =
+  const words =
     payload.bodyText
       .split(/\s+/)
       .filter(Boolean)
@@ -2061,19 +2201,15 @@ function deriveInternalParameters(
   return {
 
     C:
-      clamp(
-        wordCount >= 120
-          ? 0.85
-          : 0.70,
-        0,
-        1
-      ),
+      words >= 120
+        ? .85
+        : .70,
 
     B:
-      0.80,
+      .80,
 
     R:
-      0.50,
+      .50,
 
     G:
       16,
@@ -2099,7 +2235,9 @@ function deriveInternalParameters(
    FORMULA
 ========================================================= */
 
-function calculateFormula(p) {
+function calculateLegacyFormula(
+  p
+) {
 
   const Gnorm =
     (
@@ -2147,7 +2285,8 @@ function calculateFormula(p) {
 
 
   const F =
-    M * V;
+    M *
+    V;
 
 
   return {
@@ -2161,7 +2300,7 @@ function calculateFormula(p) {
 
 
 /* =========================================================
-   PUBLISH STORY
+   PUBLISH
 ========================================================= */
 
 async function publishStory(
@@ -2173,18 +2312,13 @@ async function publishStory(
     auth.currentUser;
 
 
-  if (!user) {
-    return;
-  }
-
-
   const story = {
 
     title:
       payload.title,
 
     summary:
-      buildSummary(
+      summary(
         payload.bodyText
       ),
 
@@ -2232,7 +2366,9 @@ async function publishStory(
       user.uid,
 
     authorName:
-      getDisplayName(user),
+      getUserName(
+        user
+      ),
 
     createdAt:
       serverTimestamp()
@@ -2260,22 +2396,23 @@ async function publishStory(
         reference.id,
 
       createdAt:
-        new Date().toISOString()
+        new Date()
+          .toISOString()
 
     };
 
 
-    const stories =
+    const local =
       getLocalStories();
 
 
-    stories.unshift(
+    local.unshift(
       localStory
     );
 
 
     saveLocalStories(
-      stories
+      local
     );
 
 
@@ -2294,7 +2431,8 @@ async function publishStory(
           "active"
         );
 
-        showStoriesPanel();
+
+        showStories();
 
       },
       900
@@ -2304,10 +2442,15 @@ async function publishStory(
   catch (error) {
 
     console.error(
-      "[Legacy] Firestore publish error:",
+      "[Legacy] Firestore publish:",
       error
     );
 
+
+    /*
+      You can still test the entire MVP even
+      if Firestore rules aren't finished.
+    */
 
     const localStory = {
 
@@ -2318,27 +2461,28 @@ async function publishStory(
         Date.now(),
 
       createdAt:
-        new Date().toISOString()
+        new Date()
+          .toISOString()
 
     };
 
 
-    const stories =
+    const local =
       getLocalStories();
 
 
-    stories.unshift(
+    local.unshift(
       localStory
     );
 
 
     saveLocalStories(
-      stories
+      local
     );
 
 
     showToast(
-      "Story saved locally. Firestore rules still need configuration."
+      "Story saved on this device."
     );
 
 
@@ -2350,17 +2494,18 @@ async function publishStory(
 
 
 /* =========================================================
-   LOAD STORIES
+   STORIES
 ========================================================= */
 
 async function loadStories() {
 
-  let firestoreStories = [];
+  let firestoreStories =
+    [];
 
 
   try {
 
-    const storiesQuery =
+    const storyQuery =
       query(
         collection(
           db,
@@ -2374,69 +2519,69 @@ async function loadStories() {
       );
 
 
-    const snapshot =
+    const snap =
       await getDocs(
-        storiesQuery
+        storyQuery
       );
 
 
     firestoreStories =
-      snapshot.docs.map(
+      snap.docs.map(
         doc => ({
+
           id:
             doc.id,
+
           ...doc.data()
+
         })
       );
 
   }
-  catch (error) {
+  catch (
+    error
+  ) {
 
     console.warn(
-      "[Legacy] Firestore Stories unavailable:",
+      "[Legacy] Firestore unavailable:",
       error
     );
 
   }
 
 
-  latestStories = [
+  const localStories =
+    getLocalStories();
 
-    ...getLocalStories(),
 
+  const combined = [
+    ...localStories,
     ...firestoreStories,
-
     ...fallbackStories
-
   ];
 
 
   renderStories(
     landingStoriesGrid,
-    latestStories
+    combined
   );
 
 
   renderStories(
     authenticatedStoriesGrid,
-    latestStories
+    combined
   );
 
 }
 
-
-/* =========================================================
-   RENDER STORIES
-========================================================= */
 
 function renderStories(
   container,
   stories
 ) {
 
-  if (!container) {
+  if (!container)
     return;
-  }
 
 
   container.innerHTML =
@@ -2463,7 +2608,7 @@ function storyCard(
     );
 
 
-  const summary =
+  const text =
     escapeHtml(
       story.summary ||
       story.bodyText?.slice(
@@ -2498,11 +2643,10 @@ function storyCard(
   ) {
 
     score =
-      `SCORE ${
-        Number(
-          story.purification.F
-        ).toFixed(2)
-      }`;
+      "SCORE " +
+      Number(
+        story.purification.F
+      ).toFixed(2);
 
   }
 
@@ -2534,7 +2678,7 @@ function storyCard(
 
 
       <p>
-        ${summary}
+        ${text}
       </p>
 
 
@@ -2546,7 +2690,10 @@ function storyCard(
 
 
         <span
-          style="color:#fff;font-weight:700;"
+          style="
+            color:white;
+            font-weight:700;
+          "
         >
           Read Story
         </span>
@@ -2561,41 +2708,74 @@ function storyCard(
 
 
 /* =========================================================
-   FILTER
+   STORY FILTERS
 ========================================================= */
 
-window.filterLandingStories =
-  function(category) {
+document
+  .querySelectorAll(
+    ".filter-btn"
+  )
+  .forEach(
+    button => {
 
-    document
-      .querySelectorAll(
-        "#landing-stories-grid .story-card"
-      )
-      .forEach(
-        card => {
+      button.addEventListener(
+        "click",
+        () => {
 
-          const cardCategory =
-            card.dataset.storyCategory ||
-            "";
+          document
+            .querySelectorAll(
+              ".filter-btn"
+            )
+            .forEach(
+              b =>
+                b.classList.remove(
+                  "active"
+                )
+            );
 
 
-          card.style.display =
-            category === "all" ||
-            cardCategory.toLowerCase() ===
-              String(
-                category
-              ).toLowerCase()
-              ? "flex"
-              : "none";
+          button.classList.add(
+            "active"
+          );
+
+
+          const category =
+            button.dataset.category;
+
+
+          document
+            .querySelectorAll(
+              "#landing-stories-grid .story-card"
+            )
+            .forEach(
+              card => {
+
+                const cardCategory =
+                  card.dataset.storyCategory ||
+                  "";
+
+
+                card.style.display =
+                  category === "all" ||
+                  cardCategory.toLowerCase() ===
+                    String(
+                      category
+                    ).toLowerCase()
+                    ? "flex"
+                    : "none";
+
+              }
+            );
 
         }
       );
 
-  };
+    }
+  );
 
 
 /* =========================================================
-   LOCAL STORIES
+   LOCAL STORY FALLBACK
 ========================================================= */
 
 function getLocalStories() {
@@ -2605,7 +2785,8 @@ function getLocalStories() {
     return JSON.parse(
       localStorage.getItem(
         "legacy_local_stories"
-      ) || "[]"
+      ) ||
+      "[]"
     );
 
   }
@@ -2636,94 +2817,54 @@ function saveLocalStories(
 
 
 /* =========================================================
-   HELPERS
+   UTILS
 ========================================================= */
 
-function resetProcessing() {
-
-  for (
-    let i = 1;
-    i <= 5;
-    i++
-  ) {
-
-    const element =
-      $(
-        `processing-${i}`
-      );
-
-
-    if (element) {
-
-      element.classList.remove(
-        "done"
-      );
-
-    }
-
-  }
-
-}
-
-
-function markProcessing(
-  number,
-  text
-) {
-
-  const element =
-    $(
-      `processing-${number}`
-    );
-
-
-  if (!element) {
-    return;
-  }
-
-
-  element.textContent =
-    text;
-
-
-  element.classList.add(
-    "done"
-  );
-
-}
-
-
-function buildSummary(
+function summary(
   text
 ) {
 
   const clean =
-    text
-      .replace(
-        /\s+/g,
-        " "
-      )
-      .trim();
+    String(
+      text || ""
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
 
 
-  if (
-    clean.length <= 280
-  ) {
+  return clean.length <= 280
+    ? clean
+    : clean
+        .slice(
+          0,
+          277
+        )
+        .trim() +
+      "...";
 
-    return clean;
-
-  }
+}
 
 
-  return (
-    clean
-      .slice(
-        0,
-        277
-      )
-      .trim() +
-    "..."
-  );
+function escapeHtml(
+  value
+) {
+
+  const node =
+    document.createElement(
+      "div"
+    );
+
+
+  node.textContent =
+    String(
+      value ?? ""
+    );
+
+
+  return node.innerHTML;
 
 }
 
@@ -2741,61 +2882,19 @@ function today() {
 
 
 function sleep(
-  milliseconds
+  ms
 ) {
 
   return new Promise(
     resolve =>
       setTimeout(
         resolve,
-        milliseconds
+        ms
       )
   );
 
 }
 
-
-function clamp(
-  value,
-  minimum,
-  maximum
-) {
-
-  return Math.min(
-    maximum,
-    Math.max(
-      minimum,
-      value
-    )
-  );
-
-}
-
-
-function escapeHtml(
-  value
-) {
-
-  const element =
-    document.createElement(
-      "div"
-    );
-
-
-  element.textContent =
-    String(
-      value ?? ""
-    );
-
-
-  return element.innerHTML;
-
-}
-
-
-/* =========================================================
-   AUTH ERROR
-========================================================= */
 
 function friendlyAuthError(
   error
@@ -2808,12 +2907,12 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/unauthorized-domain"
+      "unauthorized-domain"
     )
   ) {
 
     return (
-      "This website domain is not authorized in Firebase."
+      "Firebase has not authorized this website domain."
     );
 
   }
@@ -2821,7 +2920,7 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/operation-not-allowed"
+      "operation-not-allowed"
     )
   ) {
 
@@ -2834,12 +2933,12 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/popup-blocked"
+      "popup-blocked"
     )
   ) {
 
     return (
-      "The Google popup was blocked. Trying redirect sign-in."
+      "Google popup was blocked."
     );
 
   }
@@ -2847,12 +2946,12 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/popup-closed-by-user"
+      "popup-closed-by-user"
     )
   ) {
 
     return (
-      "The Google sign-in window was closed."
+      "Google sign-in was closed."
     );
 
   }
@@ -2860,12 +2959,12 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/email-already-in-use"
+      "email-already-in-use"
     )
   ) {
 
     return (
-      "That email is already registered. Try signing in."
+      "That email is already registered. Sign in instead."
     );
 
   }
@@ -2873,15 +2972,12 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/invalid-credential"
-    ) ||
-    code.includes(
-      "auth/wrong-password"
+      "invalid-credential"
     )
   ) {
 
     return (
-      "Wrong email or password."
+      "Those login details are not correct."
     );
 
   }
@@ -2889,38 +2985,12 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "auth/user-not-found"
+      "weak-password"
     )
   ) {
 
     return (
-      "No account with that email."
-    );
-
-  }
-
-
-  if (
-    code.includes(
-      "auth/weak-password"
-    )
-  ) {
-
-    return (
-      "Password is too weak."
-    );
-
-  }
-
-
-  if (
-    code.includes(
-      "auth/invalid-email"
-    )
-  ) {
-
-    return (
-      "That email address is not valid."
+      "Password must be at least 6 characters."
     );
 
   }
@@ -2936,7 +3006,7 @@ function friendlyAuthError(
 
 
 /* =========================================================
-   INITIAL DATE
+   INITIALIZE
 ========================================================= */
 
 if (storyDate) {
@@ -2947,12 +3017,4 @@ if (storyDate) {
 }
 
 
-/* =========================================================
-   GLOBALS
-========================================================= */
-
-window.openWorkstation =
-  openWorkstation;
-
-window.showStoriesPanel =
-  showStoriesPanel;
+loadStories();
