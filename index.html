@@ -3,39 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legacy | Ground-Truth Data Infrastructure</title>
+  <title>Legacy | Ground-Truth Intelligence</title>
   
-  <!-- FAVICON: Gradient Diamond Icon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23e63946'/><stop offset='100%25' stop-color='%23900c3f'/></linearGradient></defs><rect x='15' y='15' width='70' height='70' rx='8' transform='rotate(45 50 50)' fill='url(%23g)' stroke='%23ff4d5a' stroke-width='4'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff0055'/><stop offset='100%25' stop-color='%237a00ff'/></linearGradient></defs><rect x='15' y='15' width='70' height='70' rx='12' transform='rotate(45 50 50)' fill='url(%23g)' stroke='%23ff0055' stroke-width='4'/></svg>">
 
   <style>
     :root {
-      --bg-dark: #07080a;
-      --card-bg: #0e0f14;
-      --text-main: #f0f0f2;
-      --text-sub: #8a8d9b;
-      --accent-red: #e63946;
-      --accent-dark-red: #900c3f;
-      --border: #1e212b;
-      --input-bg: #14161f;
+      --bg-black: #050508;
+      --card-bg: rgba(18, 18, 26, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --neon-pink: #ff0055;
+      --neon-purple: #7a00ff;
+      --text-main: #f5f5f7;
+      --text-muted: #8e8e93;
+      --input-bg: #0c0d12;
     }
 
-    * { box-sizing: border-box; scroll-behavior: smooth; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
     body {
-      background-color: var(--bg-dark);
+      background-color: var(--bg-black);
       color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
+    /* NAVIGATION */
     nav {
-      background: rgba(13, 14, 18, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 40px;
+      background: rgba(5, 5, 8, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 16px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -47,323 +45,241 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
-      font-weight: 800;
-      font-size: 20px;
+      gap: 12px;
+      font-weight: 900;
+      font-size: 22px;
       letter-spacing: 2px;
       text-decoration: none;
-      color: var(--text-main);
+      color: #fff;
     }
 
-    .diamond-logo {
-      width: 22px;
-      height: 22px;
-      background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-dark-red) 100%);
+    .diamond-icon {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
       transform: rotate(45deg);
-      border: 1px solid #ff4d5a;
-      box-shadow: 0 0 12px rgba(230, 57, 70, 0.5);
-      border-radius: 3px;
+      border-radius: 4px;
+      box-shadow: 0 0 15px var(--neon-pink);
     }
 
-    .nav-links { display: flex; gap: 24px; align-items: center; }
-    .nav-links a { color: var(--text-sub); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--text-main); }
-
-    .nav-actions button {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 8px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .btn-red {
-      background: var(--accent-red) !important;
-      border-color: var(--accent-red) !important;
-      color: #fff !important;
-      font-weight: 600;
-    }
-
-    .hero {
-      padding: 100px 20px 80px;
-      text-align: center;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      background: rgba(230, 57, 70, 0.1);
-      border: 1px solid rgba(230, 57, 70, 0.3);
+    .nav-btn {
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+      border: none;
+      color: #fff;
+      padding: 10px 22px;
       border-radius: 20px;
-      color: var(--accent-red);
-      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 1px;
-      margin-bottom: 24px;
-    }
-
-    .hero h1 { font-size: 48px; font-weight: 800; tracking: -1px; margin: 0 0 20px; line-height: 1.15; }
-    .hero p { font-size: 18px; color: var(--text-sub); max-width: 700px; margin: 0 auto 36px; }
-
-    .hero-btns { display: flex; gap: 16px; justify-content: center; }
-    .hero-btns a { padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; }
-
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
-
-    .section-title { margin-bottom: 32px; text-align: center; }
-    .section-title h2 { font-size: 32px; font-weight: 800; margin: 0 0 8px; }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 36px;
-      margin-bottom: 32px;
-    }
-
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    .feature-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 24px;
-      border-radius: 12px;
-    }
-    .feature-card h3 { font-size: 18px; margin: 0 0 8px; }
-
-    .form-group { margin-bottom: 20px; }
-    label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      border-radius: 6px;
       font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.4);
+      transition: transform 0.2s;
+    }
+    .nav-btn:hover { transform: scale(1.04); }
+
+    /* VIEW MANAGEMENT */
+    .page-view { display: none; min-height: calc(100vh - 70px); }
+    .page-view.active { display: block; }
+
+    /* PAGE 1: LANDING */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 20px;
+      background: radial-gradient(circle at center, rgba(122, 0, 255, 0.15) 0%, rgba(5, 5, 8, 1) 70%);
     }
 
-    input[type="range"] { accent-color: var(--accent-red); margin-top: 8px; }
-
-    .result-box {
-      background: #14070a;
-      border: 1px solid var(--accent-red);
-      border-radius: 10px;
-      padding: 24px;
-      margin-top: 24px;
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
     }
 
-    .score-val { font-size: 42px; font-weight: 800; color: var(--accent-red); }
-    .formula-logs { font-family: monospace; font-size: 12px; color: var(--text-sub); line-height: 1.8; margin-top: 12px; }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin-bottom: 40px;
+    }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      background: rgba(0,0,0,0.85);
+    /* PAGE 2: AUTH PORTAL */
+    .auth-container {
+      display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      padding: 60px 20px;
     }
-    .modal-content {
+
+    .auth-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 32px;
-      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 24px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .form-group input:focus { border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255, 0, 85, 0.2); }
+
+    /* PAGE 3: MAIN APP LAYOUT (TIKTOK STYLE) */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      max-width: 1300px;
+      margin: 0 auto;
+      gap: 30px;
+      padding: 30px 20px;
+    }
+
+    .sidebar-profile {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 24px;
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+
+    .avatar-large {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+    }
+
+    .feed-container { display: flex; flex-direction: column; gap: 20px; }
+
+    .feed-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255, 0, 85, 0.15);
+      border: 1px solid var(--neon-pink);
+      color: var(--neon-pink);
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
 <body>
 
   <nav>
-    <a href="#" class="brand">
-      <div class="diamond-logo"></div>
+    <a href="#" class="brand" onclick="switchPage('page-landing')">
+      <div class="diamond-icon"></div>
       <span>LEGACY</span>
     </a>
-    <div class="nav-links">
-      <a href="#about">Overview</a>
-      <a href="#architecture">Architecture</a>
-      <a href="#engine">Engine Pipeline</a>
-      <a href="#feed">Public Data Stream</a>
-    </div>
-    <div class="nav-actions">
-      <span id="user-display" style="font-size:13px; color:var(--text-sub); margin-right:8px;"></span>
-      <button id="auth-btn" onclick="toggleAuthModal()">Sign In / Register</button>
+    <div id="nav-actions">
+      <button class="nav-btn" onclick="switchPage('page-auth')">Sign In / Register</button>
     </div>
   </nav>
 
-  <!-- LANDING PAGE HERO -->
-  <section class="hero">
-    <div class="hero-badge">GROUND-TRUTH DATA PIPELINE</div>
-    <h1>Deep African Context.<br>Purified for Frontier Models.</h1>
-    <p>Legacy purifies raw regional field observations through a multi-pass mathematical scoring engine ($F$-Formula) to construct clean, verified context datasets for LLM alignment.</p>
-    <div class="hero-btns">
-      <a href="#engine" class="btn-red">Open Operations Engine</a>
-      <a href="#about" style="background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main);">Read Framework Specs</a>
-    </div>
-  </section>
-
-  <div class="container">
-
-    <!-- SECTION: OVERVIEW & VISION -->
-    <section id="about" style="margin-bottom: 60px;">
-      <div class="section-title">
-        <h2>Built for Regional Ground-Truth</h2>
-        <p class="subtext">Raw observational data holds immense value, but lacks standardized verification. Legacy solves this through algorithmic purification.</p>
-      </div>
-
-      <div class="grid-3">
-        <div class="feature-card">
-          <h3>1. Field Data Capture</h3>
-          <p class="subtext">Agents collect unverified transcripts, observational logs, and direct regional findings on the ground.</p>
-        </div>
-        <div class="feature-card">
-          <h3>2. Multi-Pass Mathematical Filter</h3>
-          <p class="subtext">The $F$-Formula weighs geographical scale, certainty, intensity, and cross-source confirmations.</p>
-        </div>
-        <div class="feature-card">
-          <h3>3. Production API Datasets</h3>
-          <p class="subtext">Outputs verified, score-stamped ground-truth entries directly usable for model fine-tuning.</p>
-        </div>
-      </div>
+  <!-- PAGE 1: LANDING PAGE -->
+  <div id="page-landing" class="page-view active">
+    <section class="hero">
+      <h1>Deep Regional Context.<br>Purified for Frontier AI.</h1>
+      <p>Legacy captures and mathematically purifies real-world observational data to train precision models.</p>
+      <button class="nav-btn" style="padding: 16px 36px; font-size: 16px;" onclick="switchPage('page-auth')">Get Started</button>
     </section>
-
-    <!-- SECTION: ARCHITECTURE SPECS -->
-    <section id="architecture" style="margin-bottom: 60px;">
-      <div class="card">
-        <h2>Mathematical Architecture ($F$-Formula)</h2>
-        <p class="subtext">Every published entry passes through a strict mathematical evaluation pipeline:</p>
-        <div style="font-family: monospace; background: var(--input-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin: 20px 0; font-size: 13px;">
-          G_norm = (G - 11) / (22 - 11)<br>
-          W = ((C * B) + R) * (1 + G_norm²) * (1 + |I| / 4)<br>
-          M = W * ((Confirmations - Contradictions) / Lenses)<br>
-          V = min(1, Independent Sources / 3)<br>
-          F = M * V
-        </div>
-        <p class="subtext">This ensures biased, contradictory, or single-source noise gets filtered out before reaching final datasets.</p>
-      </div>
-    </section>
-
-    <!-- SECTION: THE OPERATIONS ENGINE -->
-    <section id="engine">
-      <div class="section-title">
-        <h2>Field Data Operations Engine</h2>
-        <p class="subtext">Input raw observations, run mathematical verification, and publish directly to the live data stream.</p>
-      </div>
-
-      <div class="card">
-        <div class="form-group">
-          <label>Observation Title / Topic Narrative</label>
-          <textarea id="obs-text" rows="3" placeholder="Describe field findings or subject context..."></textarea>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Location Target</label>
-            <input type="text" id="loc-text" placeholder="e.g. Okuru, Rivers State">
-          </div>
-          <div class="form-group">
-            <label>Geography Scale (G): <span id="disp-g">16</span></label>
-            <input type="range" id="g" min="11" max="22" value="16">
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Certainty (C): <span id="disp-c">0.50</span></label>
-            <input type="range" id="c" min="0" max="1" step="0.05" value="0.50">
-          </div>
-          <div class="form-group">
-            <label>Body Language Alignment (B): <span id="disp-b">0.50</span></label>
-            <input type="range" id="b" min="0" max="1" step="0.05" value="0.50">
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Repetition Rate (R): <span id="disp-r">0.30</span></label>
-            <input type="range" id="r" min="0" max="1" step="0.05" value="0.30">
-          </div>
-          <div class="form-group">
-            <label>Session Intensity (|I|): <span id="disp-i">0</span></label>
-            <input type="range" id="i" min="-4" max="4" step="1" value="0">
-          </div>
-        </div>
-
-        <div class="grid-3">
-          <div class="form-group">
-            <label>Lenses</label>
-            <input type="number" id="lenses" value="4" min="1">
-          </div>
-          <div class="form-group">
-            <label>Confirmations</label>
-            <input type="number" id="confirm" value="4" min="0">
-          </div>
-          <div class="form-group">
-            <label>Contradictions</label>
-            <input type="number" id="contradict" value="0" min="0">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Independent Sources (Cap at 3)</label>
-          <input type="number" id="sources" value="3" min="1" max="3">
-        </div>
-
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button class="btn-red" style="flex:1; padding: 14px; cursor: pointer; border-radius: 6px;" id="calc-btn">RUN PURIFICATION FORMULA</button>
-          <button style="flex:1; padding: 14px; cursor: pointer; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border); color: #fff;" id="save-btn">PUBLISH TO PUBLIC FEED</button>
-        </div>
-
-        <div class="result-box">
-          <div class="subtext">Confidence Score Output:</div>
-          <div class="score-val" id="score-out">4.6 / 20</div>
-          <div class="formula-logs" id="math-out"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: PUBLIC DATA STREAM -->
-    <section id="feed" style="margin-top: 60px;">
-      <div class="section-title">
-        <h2>Live Public Data Stream</h2>
-        <p class="subtext">Verified ground-truth logs published by field agents in real-time.</p>
-      </div>
-      <div id="public-feed"></div>
-    </section>
-
   </div>
 
-  <div class="modal" id="auth-modal">
-    <div class="modal-content">
-      <h2 style="margin-bottom: 8px;">Access Legacy Platform</h2>
-      <p class="subtext" style="margin-bottom: 20px;">Enter credentials to access field logs and database storage.</p>
-      
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="auth-email" placeholder="agent@legacy.ai">
+  <!-- PAGE 2: AUTHENTICATION -->
+  <div id="page-auth" class="page-view">
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2 style="margin-bottom: 8px;">Welcome to Legacy</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Sign in or create an account to view and upload observations.</p>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="auth-email" placeholder="agent@legacy.ai">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="auth-pass" placeholder="••••••••">
+        </div>
+
+        <div style="display:flex; gap:12px;">
+          <button class="nav-btn" style="flex:1;" id="btn-login">Sign In</button>
+          <button class="nav-btn" style="flex:1; background: transparent; border: 1px solid var(--glass-border); box-shadow:none;" id="btn-signup">Register</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="auth-pass" placeholder="••••••••">
+    </div>
+  </div>
+
+  <!-- PAGE 3: MAIN APP PLATFORM (FEED + PROFILE SIDEBAR) -->
+  <div id="page-app" class="page-view">
+    <div class="app-layout">
+      
+      <!-- SIDEBAR PROFILE -->
+      <div class="sidebar-profile">
+        <div class="avatar-large" id="profile-avatar">U</div>
+        <h3 id="profile-email" style="font-size: 16px; word-break: break-all;">User Account</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">Verified Field Contributor</p>
+        
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 20px 0;">
+
+        <h4>Publish New Log</h4>
+        <div class="form-group" style="margin-top: 12px;">
+          <textarea id="obs-text" rows="3" placeholder="Field narrative..."></textarea>
+        </div>
+        <div class="form-group">
+          <input type="text" id="loc-text" placeholder="Location target...">
+        </div>
+        <button class="nav-btn" style="width: 100%;" id="save-btn">Publish Entry</button>
       </div>
 
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-red" style="flex:1; padding: 12px; border-radius: 6px; cursor: pointer;" id="btn-login">Sign In</button>
-        <button style="flex:1; padding: 12px; border-radius: 6px; cursor: pointer; background: var(--input-bg); border: 1px solid var(--border); color:#fff;" id="btn-signup">Register</button>
+      <!-- MAIN FEED -->
+      <div class="feed-container">
+        <h2>Community Field Feed</h2>
+        <div id="public-feed"></div>
       </div>
-      <button style="width: 100%; padding: 10px; margin-top: 8px; background: transparent; border: none; color: var(--text-sub); cursor: pointer;" onclick="toggleAuthModal()">Cancel</button>
+
     </div>
   </div>
 
   <script type="module" src="app.js"></script>
+  <script>
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+    window.switchPage = switchPage;
+  </script>
 </body>
 </html>
