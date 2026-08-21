@@ -8,24 +8,22 @@
 </head>
 <body>
 
-  <!-- TOP NAVBAR -->
+  <!-- NAVBAR -->
   <header class="navbar">
-    <div class="logo">LEGACY</div>
-    <div id="nav-actions">
-      <!-- Dynamic Buttons populated by JS -->
-    </div>
+    <div class="logo">LEGACY <span>| Ground-Truth</span></div>
+    <div id="nav-actions"></div>
   </header>
 
   <!-- PAGE 1: LANDING PAGE -->
   <section id="page-landing" class="page-view active">
     <div class="hero">
       <h1>Ground-Truth Field Intelligence</h1>
-      <p>Read community observations, verify data logs, and contribute datasets.</p>
+      <p>Analyze datasets, consult Gemini AI in your workspace, and publish verified reports for the community.</p>
       <button class="primary-btn" onclick="switchPage('page-auth')">Get Started</button>
     </div>
   </section>
 
-  <!-- PAGE 2: AUTHENTICATION PORTAL -->
+  <!-- PAGE 2: AUTHENTICATION -->
   <section id="page-auth" class="page-view">
     <div class="auth-card">
       <h2>Access Portal</h2>
@@ -40,12 +38,12 @@
     </div>
   </section>
 
-  <!-- PAGE 3: MAIN APP (FEED, SEARCH, & UPLOAD) -->
+  <!-- PAGE 3: MAIN WORKSPACE & FEED -->
   <section id="page-app" class="page-view">
     <div class="app-layout">
       
-      <!-- SIDEBAR: CREATION & SEARCH OVERLAY -->
-      <aside class="sidebar">
+      <!-- LEFT SIDEBAR: CREATOR WORKSPACE & GEMINI COPILOT -->
+      <aside class="workspace-sidebar">
         <div class="user-profile">
           <div id="profile-avatar" class="avatar">U</div>
           <span id="profile-email">user@domain.com</span>
@@ -53,35 +51,52 @@
 
         <hr>
 
-        <!-- Search Drawer -->
-        <div class="search-box">
-          <h3>Search Logs</h3>
-          <input type="text" id="search-input" placeholder="Search keywords or location...">
+        <!-- UPLOAD DATASET / DOC -->
+        <div class="upload-section">
+          <h3>1. Upload Data / Documents</h3>
+          <label class="file-dropzone">
+            <span>📎 Click to attach dataset or document</span>
+            <input type="file" id="file-input" accept=".csv, .json, .txt, .pdf, .png, .jpg">
+          </label>
+          <div id="file-status" class="file-status">No file loaded</div>
         </div>
 
         <hr>
 
-        <!-- Publish & File Upload Form -->
-        <div class="upload-box">
-          <h3>New Entry</h3>
-          <textarea id="obs-text" placeholder="Write observation narrative..."></textarea>
-          <input type="text" id="loc-text" placeholder="Target Location">
+        <!-- GEMINI WORKSPACE ASSISTANT -->
+        <div class="gemini-copilot-box">
+          <div class="copilot-header">
+            <h3>✨ Gemini Workspace Assistant</h3>
+          </div>
+          <textarea id="ai-prompt-input" placeholder="Ask Gemini to analyze your uploaded data, summarize key points, or draft a field report..."></textarea>
+          <button id="btn-ask-gemini" class="ai-btn">Ask Gemini for Help</button>
           
-          <label class="file-label">
-            <span>📎 Attach Dataset / Doc</span>
-            <input type="file" id="file-input" accept=".csv, .pdf, .json, .txt, .png, .jpg">
-          </label>
-          <span id="file-name-display" class="file-name">No file selected</span>
+          <div id="gemini-response-box" class="copilot-response" style="display:none; margin-top:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+            <strong style="color:#a855f7;">Gemini Suggestion:</strong>
+            <p id="gemini-text" style="font-size:13px; margin:8px 0;"></p>
+            <button id="btn-use-suggestion" class="sm-btn" style="background:#a855f7; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Use in Entry</button>
+          </div>
+        </div>
 
-          <button id="save-btn" class="primary-btn">Publish Entry</button>
+        <hr>
+
+        <!-- PUBLISH FORM -->
+        <div class="publish-section">
+          <h3>2. Publish Report</h3>
+          <input type="text" id="loc-text" placeholder="Target Location (e.g. Sector 4)">
+          <textarea id="obs-text" placeholder="Final observation narrative..."></textarea>
+          <button id="save-btn" class="primary-btn">Publish to Community Feed</button>
         </div>
       </aside>
 
-      <!-- MAIN FEED VIEW -->
+      <!-- RIGHT MAIN AREA: COMMUNITY FEED -->
       <main class="feed-container">
-        <h2>Community Feed</h2>
+        <div class="feed-header">
+          <h2>Community Feed & Reports</h2>
+          <input type="text" id="search-input" placeholder="Search posts or locations...">
+        </div>
         <div id="public-feed" class="feed-list">
-          <!-- Feed items will be prepended here -->
+          <!-- Community logs will populate here -->
         </div>
       </main>
 
