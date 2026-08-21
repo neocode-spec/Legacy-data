@@ -55,25 +55,13 @@ const firebaseConfig = {
 };
 
 
-const app =
-  initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
+const auth = getAuth(app);
 
-const auth =
-  getAuth(app);
+const db = getFirestore(app);
 
-
-const db =
-  getFirestore(app);
-
-
-const provider =
-  new GoogleAuthProvider();
-
-
-/* =========================================================
-   FIREBASE GOOGLE SETTINGS
-========================================================= */
+const provider = new GoogleAuthProvider();
 
 provider.setCustomParameters({
   prompt: "select_account"
@@ -93,26 +81,13 @@ function $(id) {
    AUTH ELEMENTS
 ========================================================= */
 
-const navActions =
-  $("nav-actions");
-
-const authName =
-  $("auth-name");
-
-const authEmail =
-  $("auth-email");
-
-const authPass =
-  $("auth-pass");
-
-const btnLogin =
-  $("btn-login");
-
-const btnSignup =
-  $("btn-signup");
-
-const btnGoogle =
-  $("btn-google");
+const navActions = $("nav-actions");
+const authName = $("auth-name");
+const authEmail = $("auth-email");
+const authPass = $("auth-pass");
+const btnLogin = $("btn-login");
+const btnSignup = $("btn-signup");
+const btnGoogle = $("btn-google");
 
 
 /* =========================================================
@@ -190,7 +165,7 @@ const backToStoriesBtn =
 
 
 /* =========================================================
-   WORKSTATION ELEMENTS
+   WORKSTATION
 ========================================================= */
 
 const storyTitle =
@@ -231,7 +206,7 @@ const purificationScore =
 
 
 /* =========================================================
-   HIDDEN FORMULA VALUES
+   INTERNAL FORMULA
 ========================================================= */
 
 const paramC =
@@ -288,7 +263,6 @@ const fallbackStories = [
       "PURIFIED"
   },
 
-
   {
     title:
       "Local pricing decisions can contain context that formal datasets miss.",
@@ -305,7 +279,6 @@ const fallbackStories = [
     status:
       "PURIFIED"
   },
-
 
   {
     title:
@@ -324,7 +297,6 @@ const fallbackStories = [
       "PURIFIED"
   },
 
-
   {
     title:
       "Local behavior often makes sense only when its surrounding context is known.",
@@ -342,7 +314,6 @@ const fallbackStories = [
       "PURIFIED"
   },
 
-
   {
     title:
       "Geography changes the context of what people observe.",
@@ -359,7 +330,6 @@ const fallbackStories = [
     status:
       "PURIFIED"
   },
-
 
   {
     title:
@@ -382,7 +352,7 @@ const fallbackStories = [
 
 
 /* =========================================================
-   HANDLE GOOGLE REDIRECT RESULT
+   GOOGLE REDIRECT RESULT
 ========================================================= */
 
 getRedirectResult(auth)
@@ -400,13 +370,8 @@ getRedirectResult(auth)
   .catch((error) => {
 
     console.error(
-      "[Legacy] Google redirect result error:",
+      "[Legacy] Redirect result:",
       error
-    );
-
-
-    showToast(
-      friendlyAuthError(error)
     );
 
   });
@@ -414,6 +379,7 @@ getRedirectResult(auth)
 
 /* =========================================================
    AUTH STATE
+   THIS IS THE IMPORTANT FIX.
 ========================================================= */
 
 onAuthStateChanged(
@@ -421,6 +387,24 @@ onAuthStateChanged(
   async (user) => {
 
     if (user) {
+
+      /*
+        Firebase says the user is logged in.
+        NOW explicitly switch the application
+        from landing/auth to the authenticated app.
+      */
+
+      if (
+        typeof window.switchPage ===
+        "function"
+      ) {
+
+        window.switchPage(
+          "page-app"
+        );
+
+      }
+
 
       updateIdentity(user);
 
@@ -436,9 +420,19 @@ onAuthStateChanged(
 
     else {
 
-      renderLoggedOutNavigation();
+      if (
+        typeof window.switchPage ===
+        "function"
+      ) {
 
-      switchPage("page-landing");
+        window.switchPage(
+          "page-landing"
+        );
+
+      }
+
+
+      renderLoggedOutNavigation();
 
       await loadStories();
 
@@ -488,7 +482,10 @@ function getDisplayName(user) {
 function capitalizeName(value) {
 
   return value
-    .replace(/[._-]+/g, " ")
+    .replace(
+      /[._-]+/g,
+      " "
+    )
     .replace(
       /\b\w/g,
       char =>
@@ -509,9 +506,7 @@ function updateIdentity(user) {
 
 
   const initial =
-    name
-      .charAt(0)
-      .toUpperCase();
+    name.charAt(0).toUpperCase();
 
 
   if (sidebarAvatar) {
@@ -571,7 +566,7 @@ function updateIdentity(user) {
 
 
 /* =========================================================
-   SAVE PROFILE NAME
+   PROFILE NAME
 ========================================================= */
 
 saveProfileName?.addEventListener(
@@ -630,7 +625,6 @@ saveProfileName?.addEventListener(
     catch (error) {
 
       console.error(
-        "[Legacy] Name update error:",
         error
       );
 
@@ -646,7 +640,7 @@ saveProfileName?.addEventListener(
 
 
 /* =========================================================
-   RENDER LOGGED-IN NAV
+   LOGGED-IN NAV
 ========================================================= */
 
 function renderAuthenticatedNavigation() {
@@ -697,7 +691,7 @@ function renderAuthenticatedNavigation() {
 
 
 /* =========================================================
-   RENDER LOGGED-OUT NAV
+   LOGGED-OUT NAV
 ========================================================= */
 
 function renderLoggedOutNavigation() {
@@ -755,6 +749,11 @@ btnLogin?.addEventListener(
         password
       );
 
+      /*
+        onAuthStateChanged will automatically
+        move the user into page-app.
+      */
+
     }
     catch (error) {
 
@@ -775,7 +774,7 @@ btnLogin?.addEventListener(
 
 
 /* =========================================================
-   EMAIL REGISTRATION
+   EMAIL REGISTER
 ========================================================= */
 
 btnSignup?.addEventListener(
@@ -849,9 +848,10 @@ btnSignup?.addEventListener(
       );
 
 
-      showToast(
-        `Welcome to Legacy, ${name}.`
-      );
+      /*
+        onAuthStateChanged will now
+        switch to page-app.
+      */
 
     }
     catch (error) {
@@ -873,30 +873,12 @@ btnSignup?.addEventListener(
 
 
 /* =========================================================
-   GOOGLE SIGN-IN
-=========================================================
-
-   Important:
-   1. Try popup.
-   2. If browser blocks/cancels popup, fall back
-      to Firebase redirect.
-   3. getRedirectResult() above handles the return.
+   GOOGLE
 ========================================================= */
 
 btnGoogle?.addEventListener(
   "click",
   async () => {
-
-    if (!auth || !provider) {
-
-      showToast(
-        "Google authentication is not initialized."
-      );
-
-      return;
-
-    }
-
 
     try {
 
@@ -912,24 +894,26 @@ btnGoogle?.addEventListener(
       );
 
 
-      showToast(
-        "Google sign-in successful."
-      );
+      /*
+        DO NOT manually switch pages here.
+        Firebase auth state handles it.
+      */
 
     }
     catch (error) {
 
       console.error(
-        "[Legacy] Google sign-in error:",
+        "[Legacy] Google sign-in:",
         error
       );
 
 
       const code =
-        error?.code || "";
+        error?.code ||
+        "";
 
 
-      const shouldRedirect =
+      if (
         code.includes(
           "popup-blocked"
         ) ||
@@ -938,15 +922,8 @@ btnGoogle?.addEventListener(
         ) ||
         code.includes(
           "cancelled-popup-request"
-        );
-
-
-      if (shouldRedirect) {
-
-        showToast(
-          "Opening Google sign-in..."
-        );
-
+        )
+      ) {
 
         try {
 
@@ -959,7 +936,6 @@ btnGoogle?.addEventListener(
         catch (redirectError) {
 
           console.error(
-            "[Legacy] Google redirect error:",
             redirectError
           );
 
@@ -979,7 +955,9 @@ btnGoogle?.addEventListener(
 
 
       showToast(
-        friendlyAuthError(error)
+        friendlyAuthError(
+          error
+        )
       );
 
     }
@@ -994,33 +972,18 @@ btnGoogle?.addEventListener(
 
 profileTrigger?.addEventListener(
   "click",
-  openProfile
+  () => {
+
+    profileDrawer?.classList.add(
+      "active"
+    );
+
+    drawerBackdrop?.classList.add(
+      "active"
+    );
+
+  }
 );
-
-
-drawerClose?.addEventListener(
-  "click",
-  closeProfile
-);
-
-
-drawerBackdrop?.addEventListener(
-  "click",
-  closeProfile
-);
-
-
-function openProfile() {
-
-  profileDrawer?.classList.add(
-    "active"
-  );
-
-  drawerBackdrop?.classList.add(
-    "active"
-  );
-
-}
 
 
 function closeProfile() {
@@ -1036,9 +999,17 @@ function closeProfile() {
 }
 
 
-/* =========================================================
-   PROFILE LOGOUT
-========================================================= */
+drawerClose?.addEventListener(
+  "click",
+  closeProfile
+);
+
+
+drawerBackdrop?.addEventListener(
+  "click",
+  closeProfile
+);
+
 
 drawerLogout?.addEventListener(
   "click",
@@ -1064,7 +1035,7 @@ drawerLogout?.addEventListener(
 
 
 /* =========================================================
-   SIDEBAR COLLAPSE
+   SIDEBAR
 ========================================================= */
 
 sidebarToggle?.addEventListener(
@@ -1076,7 +1047,7 @@ sidebarToggle?.addEventListener(
     }
 
 
-    const isClosed =
+    const closed =
       appLayout.classList.toggle(
         "sidebar-closed"
       );
@@ -1085,13 +1056,12 @@ sidebarToggle?.addEventListener(
     if (sidebarToggle) {
 
       sidebarToggle.textContent =
-        isClosed
+        closed
           ? "›"
           : "‹";
 
-
       sidebarToggle.title =
-        isClosed
+        closed
           ? "Open sidebar"
           : "Collapse sidebar";
 
@@ -1102,7 +1072,7 @@ sidebarToggle?.addEventListener(
 
 
 /* =========================================================
-   DATA COLLECTOR
+   COLLECTOR
 ========================================================= */
 
 function collectorKey() {
@@ -1170,16 +1140,6 @@ function setupCollectorState() {
   }
 
 
-  if (profileRole) {
-
-    profileRole.textContent =
-      active
-        ? "Legacy Data Collector"
-        : "Legacy Reader";
-
-  }
-
-
   updateDrawerCollectorState();
 
 }
@@ -1200,17 +1160,13 @@ function updateDrawerCollectorState() {
 }
 
 
-/* =========================================================
-   ACTIVATE COLLECTOR
-========================================================= */
-
 becomeCollectorBtn?.addEventListener(
   "click",
   () => {
 
     if (!auth.currentUser) {
 
-      switchPage(
+      window.switchPage(
         "page-auth"
       );
 
@@ -1255,7 +1211,7 @@ openWorkstationBtn?.addEventListener(
 
 
 /* =========================================================
-   WORKSPACE NAVIGATION
+   WORKSPACE
 ========================================================= */
 
 backToStoriesBtn?.addEventListener(
@@ -1274,7 +1230,7 @@ function openWorkstation() {
 
   if (!auth.currentUser) {
 
-    switchPage(
+    window.switchPage(
       "page-auth"
     );
 
@@ -1316,9 +1272,7 @@ function showStoriesPanel() {
 }
 
 
-function switchPanel(
-  panel
-) {
+function switchPanel(panel) {
 
   document
     .querySelectorAll(
@@ -1424,11 +1378,9 @@ function restoreSelection() {
 
   selection.removeAllRanges();
 
-
   selection.addRange(
     savedSelection
   );
-
 
   editorDocument.focus();
 
@@ -1460,7 +1412,7 @@ editorDocument?.addEventListener(
 
 
 /* =========================================================
-   WORD-LIKE FORMATTING
+   WORD TOOLS
 ========================================================= */
 
 document
@@ -1501,13 +1453,11 @@ $("font-family")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "fontName",
       false,
       event.target.value
     );
-
 
     saveSelection();
 
@@ -1521,13 +1471,11 @@ $("font-size")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "fontSize",
       false,
       event.target.value
     );
-
 
     saveSelection();
 
@@ -1541,13 +1489,11 @@ $("text-color")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "foreColor",
       false,
       event.target.value
     );
-
 
     saveSelection();
 
@@ -1561,13 +1507,11 @@ $("highlight-color")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "hiliteColor",
       false,
       event.target.value
     );
-
 
     saveSelection();
 
@@ -1587,13 +1531,11 @@ $("heading-one")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "formatBlock",
       false,
       "h1"
     );
-
 
     saveSelection();
 
@@ -1609,13 +1551,11 @@ $("heading-two")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "formatBlock",
       false,
       "h2"
     );
-
 
     saveSelection();
 
@@ -1631,13 +1571,11 @@ $("blockquote-tool")?.addEventListener(
 
     restoreSelection();
 
-
     document.execCommand(
       "formatBlock",
       false,
       "blockquote"
     );
-
 
     saveSelection();
 
@@ -1646,7 +1584,7 @@ $("blockquote-tool")?.addEventListener(
 
 
 /* =========================================================
-   INSERT LINK
+   LINK
 ========================================================= */
 
 $("insert-link")?.addEventListener(
@@ -1665,11 +1603,7 @@ $("insert-link")?.addEventListener(
 
 
     if (!url) {
-
-      editorDocument?.focus();
-
       return;
-
     }
 
 
@@ -1687,7 +1621,7 @@ $("insert-link")?.addEventListener(
 
 
 /* =========================================================
-   INSERT TABLE
+   TABLE
 ========================================================= */
 
 $("insert-table")?.addEventListener(
@@ -1718,9 +1652,7 @@ $("insert-table")?.addEventListener(
       rows < 1 ||
       columns < 1
     ) {
-
       return;
-
     }
 
 
@@ -1897,10 +1829,8 @@ function loadDraft() {
   if (!raw) {
 
     if (storyDate) {
-
       storyDate.value =
         today();
-
     }
 
     return;
@@ -1911,26 +1841,20 @@ function loadDraft() {
   try {
 
     const draft =
-      JSON.parse(
-        raw
-      );
+      JSON.parse(raw);
 
 
     if (storyTitle) {
-
       storyTitle.value =
         draft.title ||
         "";
-
     }
 
 
     if (editorDocument) {
-
       editorDocument.innerHTML =
         draft.content ||
         "";
-
     }
 
   }
@@ -2010,20 +1934,18 @@ purifyPublishBtn?.addEventListener(
     }
 
 
-    await runPurification(
-      {
-        title,
-        bodyText,
-        bodyHtml
-      }
-    );
+    await runPurification({
+      title,
+      bodyText,
+      bodyHtml
+    });
 
   }
 );
 
 
 /* =========================================================
-   PURIFICATION UI
+   PURIFICATION
 ========================================================= */
 
 async function runPurification(
@@ -2049,9 +1971,7 @@ async function runPurification(
   );
 
 
-  await sleep(
-    400
-  );
+  await sleep(400);
 
 
   markProcessing(
@@ -2066,9 +1986,7 @@ async function runPurification(
     );
 
 
-  await sleep(
-    500
-  );
+  await sleep(500);
 
 
   markProcessing(
@@ -2077,9 +1995,7 @@ async function runPurification(
   );
 
 
-  await sleep(
-    650
-  );
+  await sleep(650);
 
 
   const result =
@@ -2088,9 +2004,7 @@ async function runPurification(
     );
 
 
-  await sleep(
-    450
-  );
+  await sleep(450);
 
 
   markProcessing(
@@ -2099,9 +2013,7 @@ async function runPurification(
   );
 
 
-  await sleep(
-    450
-  );
+  await sleep(450);
 
 
   markProcessing(
@@ -2146,50 +2058,37 @@ function deriveInternalParameters(
       .length;
 
 
-  const C =
-    clamp(
-      wordCount >= 120
-        ? 0.85
-        : 0.70,
-      0,
-      1
-    );
-
-
-  const B =
-    0.80;
-
-
-  const R =
-    0.50;
-
-
-  const G =
-    16;
-
-
-  const I =
-    0;
-
-
-  const confirmations =
-    1;
-
-
-  const contradictions =
-    0;
-
-
   return {
 
-    C,
-    B,
-    R,
-    G,
-    I,
-    confirmations,
-    contradictions,
-    lenses: 4
+    C:
+      clamp(
+        wordCount >= 120
+          ? 0.85
+          : 0.70,
+        0,
+        1
+      ),
+
+    B:
+      0.80,
+
+    R:
+      0.50,
+
+    G:
+      16,
+
+    I:
+      0,
+
+    confirmations:
+      1,
+
+    contradictions:
+      0,
+
+    lenses:
+      4
 
   };
 
@@ -2197,12 +2096,10 @@ function deriveInternalParameters(
 
 
 /* =========================================================
-   LEGACY FORMULA V1
+   FORMULA
 ========================================================= */
 
-function calculateFormula(
-  p
-) {
+function calculateFormula(p) {
 
   const Gnorm =
     (
@@ -2254,12 +2151,10 @@ function calculateFormula(
 
 
   return {
-
     W,
     M,
     V,
     F
-
   };
 
 }
@@ -2399,7 +2294,6 @@ async function publishStory(
           "active"
         );
 
-
         showStoriesPanel();
 
       },
@@ -2456,13 +2350,12 @@ async function publishStory(
 
 
 /* =========================================================
-   STORIES
+   LOAD STORIES
 ========================================================= */
 
 async function loadStories() {
 
-  let firestoreStories =
-    [];
+  let firestoreStories = [];
 
 
   try {
@@ -2490,12 +2383,9 @@ async function loadStories() {
     firestoreStories =
       snapshot.docs.map(
         doc => ({
-
           id:
             doc.id,
-
           ...doc.data()
-
         })
       );
 
@@ -2671,7 +2561,7 @@ function storyCard(
 
 
 /* =========================================================
-   STORY FILTER
+   FILTER
 ========================================================= */
 
 window.filterLandingStories =
@@ -2689,24 +2579,14 @@ window.filterLandingStories =
             "";
 
 
-          if (
+          card.style.display =
             category === "all" ||
             cardCategory.toLowerCase() ===
               String(
                 category
               ).toLowerCase()
-          ) {
-
-            card.style.display =
-              "flex";
-
-          }
-          else {
-
-            card.style.display =
-              "none";
-
-          }
+              ? "flex"
+              : "none";
 
         }
       );
@@ -2756,7 +2636,7 @@ function saveLocalStories(
 
 
 /* =========================================================
-   RESET / HELPERS
+   HELPERS
 ========================================================= */
 
 function resetProcessing() {
@@ -2773,14 +2653,13 @@ function resetProcessing() {
       );
 
 
-    if (!element) {
-      continue;
+    if (element) {
+
+      element.classList.remove(
+        "done"
+      );
+
     }
-
-
-    element.classList.remove(
-      "done"
-    );
 
   }
 
@@ -2915,7 +2794,7 @@ function escapeHtml(
 
 
 /* =========================================================
-   AUTH ERROR MESSAGES
+   AUTH ERROR
 ========================================================= */
 
 function friendlyAuthError(
@@ -2923,7 +2802,8 @@ function friendlyAuthError(
 ) {
 
   const code =
-    error?.code || "";
+    error?.code ||
+    "";
 
 
   if (
@@ -2933,7 +2813,7 @@ function friendlyAuthError(
   ) {
 
     return (
-      "Legacy's domain is not authorized in Firebase yet. Add legacy-data.onrender.com under Authentication → Settings → Authorized domains."
+      "This website domain is not authorized in Firebase."
     );
 
   }
@@ -2946,7 +2826,7 @@ function friendlyAuthError(
   ) {
 
     return (
-      "Google sign-in is not enabled in Firebase Authentication."
+      "Google sign-in is disabled in Firebase."
     );
 
   }
@@ -2959,7 +2839,7 @@ function friendlyAuthError(
   ) {
 
     return (
-      "The Google popup was blocked. Legacy will try redirect sign-in."
+      "The Google popup was blocked. Trying redirect sign-in."
     );
 
   }
@@ -2973,19 +2853,6 @@ function friendlyAuthError(
 
     return (
       "The Google sign-in window was closed."
-    );
-
-  }
-
-
-  if (
-    code.includes(
-      "auth/cancelled-popup-request"
-    )
-  ) {
-
-    return (
-      "Another Google sign-in request is already running."
     );
 
   }
@@ -3040,7 +2907,7 @@ function friendlyAuthError(
   ) {
 
     return (
-      "Password is too weak. Use at least 6 characters."
+      "Password is too weak."
     );
 
   }
@@ -3054,19 +2921,6 @@ function friendlyAuthError(
 
     return (
       "That email address is not valid."
-    );
-
-  }
-
-
-  if (
-    code.includes(
-      "auth/network-request-failed"
-    )
-  ) {
-
-    return (
-      "Network error. Check your internet connection and try again."
     );
 
   }
@@ -3094,12 +2948,11 @@ if (storyDate) {
 
 
 /* =========================================================
-   GLOBAL FUNCTIONS
+   GLOBALS
 ========================================================= */
 
 window.openWorkstation =
   openWorkstation;
-
 
 window.showStoriesPanel =
   showStoriesPanel;
