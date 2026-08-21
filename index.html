@@ -1,63 +1,94 @@
-<!-- Ensure your JavaScript is wrapped inside script tags -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getAuth, 
-      GoogleAuthProvider, 
-      signInWithPopup, 
-      signOut, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legacy | Ground-Truth Field Intelligence</title>
+  <style>
+    :root {
+      --bg-color: #050507;
+      --card-bg: #0f0f13;
+      --accent-pink: #ff007a;
+      --accent-purple: #9d00ff;
+      --text-main: #ffffff;
+      --text-sub: #8a8a9e;
+      --border-color: #1e1e26;
+    }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDh9vQKIIKNWTl8GfjLgNzksEWBUIY6mYs",
-      authDomain: "lega-10e72.firebaseapp.com",
-      projectId: "lega-10e72",
-      storageBucket: "lega-10e72.firebasestorage.app",
-      messagingSenderId: "64220913818",
-      appId: "1:64220913818:web:c0362b644a52e70ad8ff23"
-    };
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid var(--border-color); }
+    .logo { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
+    .logo-diamond { width: 18px; height: 18px; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); transform: rotate(45deg); border-radius: 3px; }
 
-    const authBtn = document.getElementById("auth-btn");
-    const getStartedBtn = document.getElementById("get-started-btn");
-    const landingView = document.getElementById("landing-view");
-    const dashboardView = document.getElementById("dashboard-view");
-    const userEmail = document.getElementById("user-email");
-    const userAvatar = document.getElementById("user-avatar");
+    .btn-primary { background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); color: white; border: none; padding: 10px 22px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.9; }
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        landingView?.classList.add("hidden");
-        dashboardView?.classList.remove("hidden");
-        if (authBtn) authBtn.textContent = "Log Out";
-        
-        if (userEmail) userEmail.textContent = user.email || "Authenticated User";
-        const initial = (user.displayName || user.email || "U").charAt(0).toUpperCase();
-        if (userAvatar) userAvatar.textContent = initial;
-      } else {
-        landingView?.classList.remove("hidden");
-        dashboardView?.classList.add("hidden");
-        if (authBtn) authBtn.textContent = "Sign In / Register";
-      }
-    });
+    /* Landing Screen */
+    .landing-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 20px; flex: 1; }
+    .landing-title { font-size: 3rem; font-weight: 800; max-width: 800px; line-height: 1.2; margin-bottom: 20px; }
+    .landing-subtitle { color: var(--text-sub); max-width: 600px; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; }
 
-    const handleLogin = () => {
-      if (auth.currentUser) {
-        signOut(auth).catch((err) => console.error("Sign out error:", err));
-      } else {
-        signInWithPopup(auth, provider).catch((err) => {
-          console.error("Auth popup error:", err);
-          alert("Authentication failed. Make sure legacy-data.onrender.com is added to Authorized Domains in Firebase!");
-        });
-      }
-    };
+    /* Dashboard Screen */
+    .dashboard-screen { display: flex; padding: 40px; gap: 40px; flex: 1; }
+    .sidebar { width: 320px; background-color: var(--card-bg); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px; border: 1px solid var(--border-color); height: fit-content; }
+    .user-profile { display: flex; align-items: center; gap: 16px; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; }
+    .user-info .email { font-size: 0.9rem; font-weight: 600; word-break: break-all; }
+    .user-info .role { font-size: 0.75rem; color: var(--text-sub); margin-top: 4px; }
 
-    authBtn?.addEventListener("click", handleLogin);
-    getStartedBtn?.addEventListener("click", handleLogin);
-  </script>
+    .input-group { display: flex; flex-direction: column; gap: 12px; }
+    textarea, input[type="text"] { width: 100%; background-color: #050507; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; color: white; outline: none; }
+    textarea { height: 100px; resize: none; }
+
+    .feed { flex: 1; }
+    .feed h2 { font-size: 1.5rem; margin-bottom: 20px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-diamond"></div>
+      <span>LEGACY</span>
+    </div>
+    <button id="auth-btn" class="btn-primary">Sign In / Register</button>
+  </header>
+
+  <!-- LANDING / ONBOARDING VIEW -->
+  <main id="landing-view" class="landing-screen">
+    <h1 class="landing-title">Ground-Truth Field Intelligence</h1>
+    <p class="landing-subtitle">Analyze datasets, draft observations with Gemini AI copilot, and share verified reports with the community.</p>
+    <button id="get-started-btn" class="btn-primary" style="padding: 14px 36px; font-size: 1rem;">Get Started</button>
+  </main>
+
+  <!-- LOGGED-IN DASHBOARD VIEW -->
+  <main id="dashboard-view" class="dashboard-screen hidden">
+    <div class="sidebar">
+      <div class="user-profile">
+        <div id="user-avatar" class="avatar">U</div>
+        <div class="user-info">
+          <div id="user-email" class="email">Authenticated User</div>
+          <div class="role">Verified Field Contributor</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label style="font-weight:600; font-size:0.9rem;">Publish New Log</label>
+        <textarea id="field-narrative" placeholder="Field narrative..."></textarea>
+        <input type="text" id="location-target" placeholder="Location target..." />
+        <button class="btn-primary" style="border-radius:10px;">Publish Entry</button>
+      </div>
+    </div>
+
+    <div class="feed">
+      <h2>Community Field Feed</h2>
+      <div id="feed-container"></div>
+    </div>
+  </main>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
