@@ -8,22 +8,24 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- TOP NAVBAR -->
   <header class="navbar">
-    <div class="logo">LEGACY <span>| Ground-Truth</span></div>
-    <div id="nav-actions"></div>
+    <div class="logo">LEGACY</div>
+    <div id="nav-actions">
+      <!-- Dynamic Auth/Key status buttons injected via JS -->
+    </div>
   </header>
 
   <!-- PAGE 1: LANDING PAGE -->
   <section id="page-landing" class="page-view active">
     <div class="hero">
       <h1>Ground-Truth Field Intelligence</h1>
-      <p>Analyze datasets, consult Gemini AI in your workspace, and publish verified reports for the community.</p>
+      <p>Analyze datasets, draft observations with Gemini AI copilot, and share verified reports with the community.</p>
       <button class="primary-btn" onclick="switchPage('page-auth')">Get Started</button>
     </div>
   </section>
 
-  <!-- PAGE 2: AUTHENTICATION -->
+  <!-- PAGE 2: AUTHENTICATION PORTAL -->
   <section id="page-auth" class="page-view">
     <div class="auth-card">
       <h2>Access Portal</h2>
@@ -38,12 +40,12 @@
     </div>
   </section>
 
-  <!-- PAGE 3: MAIN WORKSPACE & FEED -->
+  <!-- PAGE 3: WORKSPACE & COMMUNITY FEED -->
   <section id="page-app" class="page-view">
     <div class="app-layout">
       
-      <!-- LEFT SIDEBAR: CREATOR WORKSPACE & GEMINI COPILOT -->
-      <aside class="workspace-sidebar">
+      <!-- SIDEBAR WORKSPACE: UPLOAD, AI ASSISTANT, PUBLISH -->
+      <aside class="sidebar">
         <div class="user-profile">
           <div id="profile-avatar" class="avatar">U</div>
           <span id="profile-email">user@domain.com</span>
@@ -51,52 +53,50 @@
 
         <hr>
 
-        <!-- UPLOAD DATASET / DOC -->
-        <div class="upload-section">
+        <!-- 1. DATASET / DOCUMENT ATTACHMENT -->
+        <div class="upload-box">
           <h3>1. Upload Data / Documents</h3>
-          <label class="file-dropzone">
-            <span>📎 Click to attach dataset or document</span>
-            <input type="file" id="file-input" accept=".csv, .json, .txt, .pdf, .png, .jpg">
+          <label class="file-label" style="display: block; cursor: pointer; padding: 10px; border: 1px dashed var(--neon-purple, #a855f7); border-radius: 8px; text-align: center;">
+            <span>📎 Select Dataset / Document</span>
+            <input type="file" id="file-input" accept=".csv, .pdf, .json, .txt, .png, .jpg" style="display: none;">
           </label>
-          <div id="file-status" class="file-status">No file loaded</div>
+          <div id="file-status" style="font-size: 12px; color: #94a3b8; margin-top: 6px;">No file loaded</div>
         </div>
 
         <hr>
 
-        <!-- GEMINI WORKSPACE ASSISTANT -->
-        <div class="gemini-copilot-box">
-          <div class="copilot-header">
-            <h3>✨ Gemini Workspace Assistant</h3>
-          </div>
-          <textarea id="ai-prompt-input" placeholder="Ask Gemini to analyze your uploaded data, summarize key points, or draft a field report..."></textarea>
-          <button id="btn-ask-gemini" class="ai-btn">Ask Gemini for Help</button>
+        <!-- 2. GEMINI WORKSPACE COPILOT -->
+        <div class="copilot-box">
+          <h3>✨ Gemini Workspace Assistant</h3>
+          <textarea id="ai-prompt-input" placeholder="Ask Gemini to analyze your uploaded data, summarize findings, or draft your field report..."></textarea>
+          <button id="btn-ask-gemini" class="secondary-btn" style="width: 100%; margin-top: 6px;">Ask Gemini</button>
           
-          <div id="gemini-response-box" class="copilot-response" style="display:none; margin-top:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
-            <strong style="color:#a855f7;">Gemini Suggestion:</strong>
-            <p id="gemini-text" style="font-size:13px; margin:8px 0;"></p>
-            <button id="btn-use-suggestion" class="sm-btn" style="background:#a855f7; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Use in Entry</button>
+          <div id="gemini-response-box" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; border-left: 3px solid #a855f7;">
+            <strong style="color: #a855f7; font-size: 12px;">Gemini Suggestion:</strong>
+            <p id="gemini-text" style="font-size: 13px; margin: 6px 0; white-space: pre-wrap;"></p>
+            <button id="btn-use-suggestion" class="sm-btn" style="background: #a855f7; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">Use in Entry</button>
           </div>
         </div>
 
         <hr>
 
-        <!-- PUBLISH FORM -->
-        <div class="publish-section">
-          <h3>2. Publish Report</h3>
-          <input type="text" id="loc-text" placeholder="Target Location (e.g. Sector 4)">
-          <textarea id="obs-text" placeholder="Final observation narrative..."></textarea>
-          <button id="save-btn" class="primary-btn">Publish to Community Feed</button>
+        <!-- 3. PUBLISH FIELD ENTRY -->
+        <div class="publish-box">
+          <h3>3. Publish Entry</h3>
+          <input type="text" id="loc-text" placeholder="Target Location (e.g., Sector 4)">
+          <textarea id="obs-text" placeholder="Write final observation narrative..."></textarea>
+          <button id="save-btn" class="primary-btn" style="width: 100%; margin-top: 8px;">Publish to Community Feed</button>
         </div>
       </aside>
 
-      <!-- RIGHT MAIN AREA: COMMUNITY FEED -->
+      <!-- MAIN AREA: COMMUNITY READER FEED -->
       <main class="feed-container">
-        <div class="feed-header">
-          <h2>Community Feed & Reports</h2>
-          <input type="text" id="search-input" placeholder="Search posts or locations...">
+        <div class="feed-header" style="margin-bottom: 16px;">
+          <h2>Community Feed & Reader</h2>
+          <input type="text" id="search-input" placeholder="Search logs, keywords, or location..." style="width: 100%; padding: 8px; margin-top: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: #fff;">
         </div>
         <div id="public-feed" class="feed-list">
-          <!-- Community logs will populate here -->
+          <!-- Live cards will load here -->
         </div>
       </main>
 
