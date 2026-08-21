@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Safe Gemini Key Retriever (stored locally to bypass GitHub Secret Scanning)
+// Local Storage API Key Handler (Keeps secrets clean for GitHub push)
 function getGeminiApiKey() {
   let savedKey = localStorage.getItem("GEMINI_API_KEY");
   if (!savedKey || savedKey.trim() === "") {
@@ -38,7 +38,7 @@ function getGeminiApiKey() {
   return savedKey;
 }
 
-// Page Router
+// Page Switcher
 function navigateTo(pageId) {
   document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
   const targetPage = document.getElementById(pageId);
@@ -46,7 +46,7 @@ function navigateTo(pageId) {
 }
 window.switchPage = navigateTo;
 
-// Auth State Monitor
+// Auth State Observer
 onAuthStateChanged(auth, (user) => {
   const navActions = document.getElementById('nav-actions');
 
@@ -67,7 +67,7 @@ onAuthStateChanged(auth, (user) => {
         const newKey = window.prompt("Enter/Update your Gemini API Key:");
         if (newKey) {
           localStorage.setItem("GEMINI_API_KEY", newKey.trim());
-          alert("Gemini key saved!");
+          alert("Key stored successfully!");
         }
       });
 
@@ -83,7 +83,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Auth Click Handlers
+// Authentication Handlers
 document.getElementById('btn-google')?.addEventListener('click', () => signInWithPopup(auth, googleProvider));
 document.getElementById('btn-login')?.addEventListener('click', () => {
   signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-pass').value);
@@ -92,28 +92,28 @@ document.getElementById('btn-signup')?.addEventListener('click', () => {
   createUserWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-pass').value);
 });
 
-// File Selection Handler
+// Document File Handler
 let currentFile = null;
 document.getElementById('file-input')?.addEventListener('change', (e) => {
   currentFile = e.target.files[0];
   const status = document.getElementById('file-status');
   if (status) {
-    status.innerText = currentFile ? `📄 Attached: ${currentFile.name}` : 'No file loaded';
+    status.innerText = currentFile ? `📄 Loaded: ${currentFile.name}` : 'No file loaded';
   }
 });
 
-// 2. GEMINI WORKSPACE ASSISTANT (Helps while creating report)
+// 2. GEMINI WORKSPACE COPILOT (In-editor AI helper)
 document.getElementById('btn-ask-gemini')?.addEventListener('click', async () => {
   const promptText = document.getElementById('ai-prompt-input').value;
   const apiKey = getGeminiApiKey();
 
   if (!apiKey) {
-    alert("Please provide a Gemini API key using the 'Set AI Key' button in the navbar.");
+    alert("Gemini API Key is missing. Use 'Set AI Key' in the navbar.");
     return;
   }
 
   if (!promptText && !currentFile) {
-    alert("Please enter a instruction or upload a document first.");
+    alert("Write a prompt or select a file first.");
     return;
   }
 
@@ -124,9 +124,9 @@ document.getElementById('btn-ask-gemini')?.addEventListener('click', async () =>
   try {
     const ai = new GoogleGenAI({ apiKey: apiKey });
     
-    let fullPrompt = `You are an AI assistant helping a researcher draft a field observation.\n`;
+    let fullPrompt = `You are a field workspace assistant on the Legacy platform.\n`;
     if (currentFile) fullPrompt += `Attached Document: ${currentFile.name}\n`;
-    fullPrompt += `User Request: ${promptText || "Summarize the findings and draft a short report."}`;
+    fullPrompt += `User Request: ${promptText || "Analyze available information and draft a field report."}`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -150,7 +150,7 @@ document.getElementById('btn-ask-gemini')?.addEventListener('click', async () =>
   } catch (err) {
     alert("Gemini Error: " + err.message);
   } finally {
-    btn.innerText = "Ask Gemini for Help";
+    btn.innerText = "Ask Gemini";
     btn.disabled = false;
   }
 });
@@ -161,7 +161,7 @@ document.getElementById('save-btn')?.addEventListener('click', () => {
   const location = document.getElementById('loc-text').value;
 
   if (!narrative) {
-    alert("Please write an observation narrative before publishing.");
+    alert("Write an observation narrative before publishing.");
     return;
   }
 
@@ -175,13 +175,13 @@ document.getElementById('save-btn')?.addEventListener('click', () => {
       <div style="font-size: 11px; color: #38bdf8; font-weight: bold; margin-bottom: 6px;">POSTED REPORT</div>
       <p style="font-size: 15px; margin-bottom: 10px;">"${narrative}"</p>
       <p style="color: #94a3b8; font-size: 12px; margin-bottom: 4px;">📍 Location: ${location || 'Unspecified'}</p>
-      ${currentFile ? `<p style="color: #a855f7; font-size: 12px;">📎 Dataset/Doc Attached: ${currentFile.name}</p>` : ''}
+      ${currentFile ? `<p style="color: #a855f7; font-size: 12px;">📎 Attached File: ${currentFile.name}</p>` : ''}
     `;
 
     feed.prepend(card);
   }
 
-  // Reset Workspace Form
+  // Clear workspace draft
   document.getElementById('obs-text').value = '';
   document.getElementById('loc-text').value = '';
   document.getElementById('ai-prompt-input').value = '';
