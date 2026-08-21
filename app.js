@@ -10,7 +10,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { GoogleGenAI } from "https://esm.run/@google/genai";
 
-// 1. FIREBASE CONFIGURATION
+// 1. FIREBASE CONFIGURATION (lega-10e72)
 const firebaseConfig = {
   apiKey: "AIzaSyDh9vQKIIKNWTl8GfjLgNzksEWBUIY6mYs",
   authDomain: "lega-10e72.firebaseapp.com",
@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Local Storage AI Key Resolver
+// Safe Gemini Key Retriever (stored locally to bypass GitHub Secret Scanning)
 function getGeminiApiKey() {
   let savedKey = localStorage.getItem("GEMINI_API_KEY");
   if (!savedKey || savedKey.trim() === "") {
@@ -38,7 +38,7 @@ function getGeminiApiKey() {
   return savedKey;
 }
 
-// Page Navigation Switcher
+// Page Router
 function navigateTo(pageId) {
   document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
   const targetPage = document.getElementById(pageId);
@@ -59,7 +59,7 @@ onAuthStateChanged(auth, (user) => {
     
     if (navActions) {
       navActions.innerHTML = `
-        <button class="nav-btn" id="btn-key-reset">Set AI Key</button>
+        <button class="nav-btn" id="btn-key-reset" style="margin-right:8px;">Set AI Key</button>
         <button class="nav-btn" id="btn-logout">Log Out</button>
       `;
       
@@ -67,7 +67,7 @@ onAuthStateChanged(auth, (user) => {
         const newKey = window.prompt("Enter/Update your Gemini API Key:");
         if (newKey) {
           localStorage.setItem("GEMINI_API_KEY", newKey.trim());
-          alert("Key stored successfully!");
+          alert("Gemini key saved!");
         }
       });
 
@@ -77,13 +77,13 @@ onAuthStateChanged(auth, (user) => {
     navigateTo('page-app');
   } else {
     if (navActions) {
-      navActions.innerHTML = `<button class="nav-btn" id="btn-nav-auth" onclick="switchPage('page-auth')">Sign In / Register</button>`;
+      navActions.innerHTML = `<button class="nav-btn" onclick="switchPage('page-auth')">Sign In / Register</button>`;
     }
     navigateTo('page-landing');
   }
 });
 
-// Auth Handlers
+// Auth Click Handlers
 document.getElementById('btn-google')?.addEventListener('click', () => signInWithPopup(auth, googleProvider));
 document.getElementById('btn-login')?.addEventListener('click', () => {
   signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-pass').value);
@@ -92,84 +92,108 @@ document.getElementById('btn-signup')?.addEventListener('click', () => {
   createUserWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-pass').value);
 });
 
-// File Selected Name Display
-const fileInput = document.getElementById('file-input');
-fileInput?.addEventListener('change', (e) => {
-  const display = document.getElementById('file-name-display');
-  if (display) display.innerText = e.target.files[0] ? `Attached: ${e.target.files[0].name}` : 'No file selected';
-});
-
-// Search Filter Logic
-document.getElementById('search-input')?.addEventListener('input', (e) => {
-  const term = e.target.value.toLowerCase();
-  const cards = document.querySelectorAll('.feed-card');
-  cards.forEach(card => {
-    const text = card.innerText.toLowerCase();
-    card.style.display = text.includes(term) ? 'block' : 'none';
-  });
-});
-
-// Gemini Publishing & Verification Handler
-document.getElementById('save-btn')?.addEventListener('click', async () => {
-  const narrative = document.getElementById('obs-text').value;
-  const location = document.getElementById('loc-text').value;
-  const attachedFile = fileInput?.files[0];
-
-  if (!narrative) {
-    alert("Please enter field narrative.");
-    return;
+// File Selection Handler
+let currentFile = null;
+document.getElementById('file-input')?.addEventListener('change', (e) => {
+  currentFile = e.target.files[0];
+  const status = document.getElementById('file-status');
+  if (status) {
+    status.innerText = currentFile ? `📄 Attached: ${currentFile.name}` : 'No file loaded';
   }
+});
 
+// 2. GEMINI WORKSPACE ASSISTANT (Helps while creating report)
+document.getElementById('btn-ask-gemini')?.addEventListener('click', async () => {
+  const promptText = document.getElementById('ai-prompt-input').value;
   const apiKey = getGeminiApiKey();
+
   if (!apiKey) {
-    alert("API Key required.");
+    alert("Please provide a Gemini API key using the 'Set AI Key' button in the navbar.");
     return;
   }
 
-  const saveBtn = document.getElementById('save-btn');
-  saveBtn.innerText = "Analyzing with Gemini...";
-  saveBtn.disabled = true;
+  if (!promptText && !currentFile) {
+    alert("Please enter a instruction or upload a document first.");
+    return;
+  }
+
+  const btn = document.getElementById('btn-ask-gemini');
+  btn.innerText = "Gemini is analyzing...";
+  btn.disabled = true;
 
   try {
     const ai = new GoogleGenAI({ apiKey: apiKey });
-
-    const promptText = `Evaluate this field log observation for ground-truth quality. Provide a score out of 20 and a short 1-sentence analysis.\nLocation: ${location}\nAttachment: ${attachedFile ? attachedFile.name : 'None'}\nLog: ${narrative}`;
+    
+    let fullPrompt = `You are an AI assistant helping a researcher draft a field observation.\n`;
+    if (currentFile) fullPrompt += `Attached Document: ${currentFile.name}\n`;
+    fullPrompt += `User Request: ${promptText || "Summarize the findings and draft a short report."}`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: promptText,
+      contents: fullPrompt,
     });
 
-    const aiAnalysis = response.text;
+    const aiOutput = response.text;
 
-    // Build Feed Card
-    const feed = document.getElementById('public-feed');
-    const newCard = document.createElement('div');
-    newCard.className = 'feed-card';
-    newCard.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;";
+    const responseBox = document.getElementById('gemini-response-box');
+    const textEl = document.getElementById('gemini-text');
     
-    newCard.innerHTML = `
-      <div style="font-weight: bold; color: #a855f7; font-size: 12px; margin-bottom: 6px;">Gemini Verified</div>
-      <p style="font-size: 15px; margin-bottom: 8px;">"${narrative}"</p>
-      <p style="color: #94a3b8; font-size: 12px; margin-bottom: 8px;">📍 ${location || 'Unspecified Location'}</p>
-      ${attachedFile ? `<p style="color: #38bdf8; font-size: 12px; margin-bottom: 8px;">📎 File: ${attachedFile.name}</p>` : ''}
-      <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 13px; border-left: 3px solid #a855f7;">
-        <strong>Gemini Evaluation:</strong><br>${aiAnalysis}
-      </div>
-    `;
+    if (textEl && responseBox) {
+      textEl.innerText = aiOutput;
+      responseBox.style.display = 'block';
+    }
 
-    feed.prepend(newCard);
-
-    // Reset Inputs
-    document.getElementById('obs-text').value = '';
-    document.getElementById('loc-text').value = '';
-    fileInput.value = '';
-    document.getElementById('file-name-display').innerText = 'No file selected';
+    document.getElementById('btn-use-suggestion').onclick = () => {
+      document.getElementById('obs-text').value = aiOutput;
+    };
 
   } catch (err) {
     alert("Gemini Error: " + err.message);
   } finally {
-    saveBtn.innerText = "Publish Entry";
-    saveBtn.disabled = false;
+    btn.innerText = "Ask Gemini for Help";
+    btn.disabled = false;
   }
+});
+
+// 3. PUBLISH REPORT TO COMMUNITY FEED
+document.getElementById('save-btn')?.addEventListener('click', () => {
+  const narrative = document.getElementById('obs-text').value;
+  const location = document.getElementById('loc-text').value;
+
+  if (!narrative) {
+    alert("Please write an observation narrative before publishing.");
+    return;
+  }
+
+  const feed = document.getElementById('public-feed');
+  if (feed) {
+    const card = document.createElement('div');
+    card.className = 'feed-card';
+    card.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;";
+
+    card.innerHTML = `
+      <div style="font-size: 11px; color: #38bdf8; font-weight: bold; margin-bottom: 6px;">POSTED REPORT</div>
+      <p style="font-size: 15px; margin-bottom: 10px;">"${narrative}"</p>
+      <p style="color: #94a3b8; font-size: 12px; margin-bottom: 4px;">📍 Location: ${location || 'Unspecified'}</p>
+      ${currentFile ? `<p style="color: #a855f7; font-size: 12px;">📎 Dataset/Doc Attached: ${currentFile.name}</p>` : ''}
+    `;
+
+    feed.prepend(card);
+  }
+
+  // Reset Workspace Form
+  document.getElementById('obs-text').value = '';
+  document.getElementById('loc-text').value = '';
+  document.getElementById('ai-prompt-input').value = '';
+  document.getElementById('gemini-response-box').style.display = 'none';
+  document.getElementById('file-status').innerText = 'No file loaded';
+  currentFile = null;
+});
+
+// Search Filter
+document.getElementById('search-input')?.addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  document.querySelectorAll('.feed-card').forEach(card => {
+    card.style.display = card.innerText.toLowerCase().includes(term) ? 'block' : 'none';
+  });
 });
