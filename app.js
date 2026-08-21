@@ -1,4 +1,3 @@
-```javascript
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -7,6 +6,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
@@ -55,9 +56,7 @@ const firebaseConfig = {
 
 
 const app =
-  initializeApp(
-    firebaseConfig
-  );
+  initializeApp(firebaseConfig);
 
 
 const auth =
@@ -73,6 +72,15 @@ const provider =
 
 
 /* =========================================================
+   FIREBASE GOOGLE SETTINGS
+========================================================= */
+
+provider.setCustomParameters({
+  prompt: "select_account"
+});
+
+
+/* =========================================================
    DOM HELPER
 ========================================================= */
 
@@ -82,7 +90,7 @@ function $(id) {
 
 
 /* =========================================================
-   ELEMENTS
+   AUTH ELEMENTS
 ========================================================= */
 
 const navActions =
@@ -105,6 +113,11 @@ const btnSignup =
 
 const btnGoogle =
   $("btn-google");
+
+
+/* =========================================================
+   APP ELEMENTS
+========================================================= */
 
 const landingStoriesGrid =
   $("landing-stories-grid");
@@ -175,6 +188,11 @@ const panelWorkstation =
 const backToStoriesBtn =
   $("back-to-stories-btn");
 
+
+/* =========================================================
+   WORKSTATION ELEMENTS
+========================================================= */
+
 const storyTitle =
   $("story-title");
 
@@ -213,6 +231,32 @@ const purificationScore =
 
 
 /* =========================================================
+   HIDDEN FORMULA VALUES
+========================================================= */
+
+const paramC =
+  $("param-c");
+
+const paramB =
+  $("param-b");
+
+const paramR =
+  $("param-r");
+
+const paramG =
+  $("param-g");
+
+const paramI =
+  $("param-i");
+
+const paramConfirm =
+  $("param-confirm");
+
+const paramContra =
+  $("param-contra");
+
+
+/* =========================================================
    STATE
 ========================================================= */
 
@@ -244,6 +288,7 @@ const fallbackStories = [
       "PURIFIED"
   },
 
+
   {
     title:
       "Local pricing decisions can contain context that formal datasets miss.",
@@ -260,6 +305,7 @@ const fallbackStories = [
     status:
       "PURIFIED"
   },
+
 
   {
     title:
@@ -278,6 +324,7 @@ const fallbackStories = [
       "PURIFIED"
   },
 
+
   {
     title:
       "Local behavior often makes sense only when its surrounding context is known.",
@@ -295,6 +342,7 @@ const fallbackStories = [
       "PURIFIED"
   },
 
+
   {
     title:
       "Geography changes the context of what people observe.",
@@ -311,6 +359,7 @@ const fallbackStories = [
     status:
       "PURIFIED"
   },
+
 
   {
     title:
@@ -333,18 +382,47 @@ const fallbackStories = [
 
 
 /* =========================================================
+   HANDLE GOOGLE REDIRECT RESULT
+========================================================= */
+
+getRedirectResult(auth)
+  .then((result) => {
+
+    if (result?.user) {
+
+      showToast(
+        "Google sign-in successful."
+      );
+
+    }
+
+  })
+  .catch((error) => {
+
+    console.error(
+      "[Legacy] Google redirect result error:",
+      error
+    );
+
+
+    showToast(
+      friendlyAuthError(error)
+    );
+
+  });
+
+
+/* =========================================================
    AUTH STATE
 ========================================================= */
 
 onAuthStateChanged(
   auth,
-  async user => {
+  async (user) => {
 
     if (user) {
 
-      updateIdentity(
-        user
-      );
+      updateIdentity(user);
 
       renderAuthenticatedNavigation();
 
@@ -354,13 +432,13 @@ onAuthStateChanged(
 
       await loadStories();
 
-    } else {
+    }
+
+    else {
 
       renderLoggedOutNavigation();
 
-      switchPage(
-        "page-landing"
-      );
+      switchPage("page-landing");
 
       await loadStories();
 
@@ -371,12 +449,10 @@ onAuthStateChanged(
 
 
 /* =========================================================
-   IDENTITY
+   DISPLAY NAME
 ========================================================= */
 
-function getDisplayName(
-  user
-) {
+function getDisplayName(user) {
 
   if (
     user?.displayName &&
@@ -409,62 +485,84 @@ function getDisplayName(
 }
 
 
-function capitalizeName(
-  value
-) {
+function capitalizeName(value) {
 
   return value
     .replace(/[._-]+/g, " ")
-    .replace(/\b\w/g, char => char.toUpperCase());
+    .replace(
+      /\b\w/g,
+      char =>
+        char.toUpperCase()
+    );
 
 }
 
 
-function updateIdentity(
-  user
-) {
+/* =========================================================
+   UPDATE IDENTITY
+========================================================= */
+
+function updateIdentity(user) {
 
   const name =
-    getDisplayName(
-      user
-    );
+    getDisplayName(user);
 
 
   const initial =
-    name.charAt(0).toUpperCase();
+    name
+      .charAt(0)
+      .toUpperCase();
 
 
-  if (sidebarAvatar)
+  if (sidebarAvatar) {
+
     sidebarAvatar.textContent =
       initial;
 
+  }
 
-  if (drawerAvatar)
+
+  if (drawerAvatar) {
+
     drawerAvatar.textContent =
       initial;
 
+  }
 
-  if (sidebarEmail)
+
+  if (sidebarEmail) {
+
     sidebarEmail.textContent =
       name;
 
+  }
 
-  if (profileNameInput)
+
+  if (profileNameInput) {
+
     profileNameInput.value =
       name;
 
+  }
 
-  if (profileEmail)
+
+  if (profileEmail) {
+
     profileEmail.textContent =
       user.email ||
       "Authenticated user";
 
+  }
 
-  if (profileRole)
+
+  if (profileRole) {
+
     profileRole.textContent =
       isCollector()
         ? "Legacy Data Collector"
         : "Legacy Reader";
+
+  }
 
 
   updateDrawerCollectorState();
@@ -473,7 +571,7 @@ function updateIdentity(
 
 
 /* =========================================================
-   PROFILE NAME SAVE
+   SAVE PROFILE NAME
 ========================================================= */
 
 saveProfileName?.addEventListener(
@@ -484,8 +582,15 @@ saveProfileName?.addEventListener(
       auth.currentUser;
 
 
-    if (!user)
+    if (!user) {
+
+      showToast(
+        "You are not signed in."
+      );
+
       return;
+
+    }
 
 
     const name =
@@ -514,23 +619,21 @@ saveProfileName?.addEventListener(
       );
 
 
-      updateIdentity(
-        user
-      );
+      updateIdentity(user);
 
 
       showToast(
         "Name updated."
       );
 
-
-    } catch (
-      error
-    ) {
+    }
+    catch (error) {
 
       console.error(
+        "[Legacy] Name update error:",
         error
       );
+
 
       showToast(
         "Could not update your name."
@@ -543,13 +646,14 @@ saveProfileName?.addEventListener(
 
 
 /* =========================================================
-   NAVIGATION
+   RENDER LOGGED-IN NAV
 ========================================================= */
 
 function renderAuthenticatedNavigation() {
 
-  if (!navActions)
+  if (!navActions) {
     return;
+  }
 
 
   navActions.innerHTML = `
@@ -567,19 +671,40 @@ function renderAuthenticatedNavigation() {
 
   $("logout-btn")?.addEventListener(
     "click",
-    () =>
-      signOut(
-        auth
-      )
+    async () => {
+
+      try {
+
+        await signOut(auth);
+
+        showToast(
+          "Logged out."
+        );
+
+      }
+      catch (error) {
+
+        console.error(
+          error
+        );
+
+      }
+
+    }
   );
 
 }
 
 
+/* =========================================================
+   RENDER LOGGED-OUT NAV
+========================================================= */
+
 function renderLoggedOutNavigation() {
 
-  if (!navActions)
+  if (!navActions) {
     return;
+  }
 
 
   navActions.innerHTML = `
@@ -630,19 +755,17 @@ btnLogin?.addEventListener(
         password
       );
 
-    } catch (
-      error
-    ) {
+    }
+    catch (error) {
 
       console.error(
-        "Login error:",
+        "[Legacy] Login error:",
         error
       );
 
+
       showToast(
-        friendlyAuthError(
-          error
-        )
+        friendlyAuthError(error)
       );
 
     }
@@ -652,7 +775,7 @@ btnLogin?.addEventListener(
 
 
 /* =========================================================
-   REGISTER
+   EMAIL REGISTRATION
 ========================================================= */
 
 btnSignup?.addEventListener(
@@ -691,9 +814,7 @@ btnSignup?.addEventListener(
     }
 
 
-    if (
-      password.length < 6
-    ) {
+    if (password.length < 6) {
 
       showToast(
         "Password needs at least 6 characters."
@@ -728,19 +849,21 @@ btnSignup?.addEventListener(
       );
 
 
-    } catch (
-      error
-    ) {
+      showToast(
+        `Welcome to Legacy, ${name}.`
+      );
+
+    }
+    catch (error) {
 
       console.error(
-        "Register error:",
+        "[Legacy] Registration error:",
         error
       );
 
+
       showToast(
-        friendlyAuthError(
-          error
-        )
+        friendlyAuthError(error)
       );
 
     }
@@ -750,33 +873,113 @@ btnSignup?.addEventListener(
 
 
 /* =========================================================
-   GOOGLE
+   GOOGLE SIGN-IN
+=========================================================
+
+   Important:
+   1. Try popup.
+   2. If browser blocks/cancels popup, fall back
+      to Firebase redirect.
+   3. getRedirectResult() above handles the return.
 ========================================================= */
 
 btnGoogle?.addEventListener(
   "click",
   async () => {
 
+    if (!auth || !provider) {
+
+      showToast(
+        "Google authentication is not initialized."
+      );
+
+      return;
+
+    }
+
+
     try {
+
+      provider.setCustomParameters({
+        prompt:
+          "select_account"
+      });
+
 
       await signInWithPopup(
         auth,
         provider
       );
 
-    } catch (
-      error
-    ) {
+
+      showToast(
+        "Google sign-in successful."
+      );
+
+    }
+    catch (error) {
 
       console.error(
-        "Google auth error:",
+        "[Legacy] Google sign-in error:",
         error
       );
 
+
+      const code =
+        error?.code || "";
+
+
+      const shouldRedirect =
+        code.includes(
+          "popup-blocked"
+        ) ||
+        code.includes(
+          "popup-closed-by-user"
+        ) ||
+        code.includes(
+          "cancelled-popup-request"
+        );
+
+
+      if (shouldRedirect) {
+
+        showToast(
+          "Opening Google sign-in..."
+        );
+
+
+        try {
+
+          await signInWithRedirect(
+            auth,
+            provider
+          );
+
+        }
+        catch (redirectError) {
+
+          console.error(
+            "[Legacy] Google redirect error:",
+            redirectError
+          );
+
+
+          showToast(
+            friendlyAuthError(
+              redirectError
+            )
+          );
+
+        }
+
+
+        return;
+
+      }
+
+
       showToast(
-        friendlyAuthError(
-          error
-        )
+        friendlyAuthError(error)
       );
 
     }
@@ -833,21 +1036,22 @@ function closeProfile() {
 }
 
 
+/* =========================================================
+   PROFILE LOGOUT
+========================================================= */
+
 drawerLogout?.addEventListener(
   "click",
   async () => {
 
     try {
 
-      await signOut(
-        auth
-      );
+      await signOut(auth);
 
       closeProfile();
 
-    } catch (
-      error
-    ) {
+    }
+    catch (error) {
 
       console.error(
         error
@@ -860,43 +1064,41 @@ drawerLogout?.addEventListener(
 
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR COLLAPSE
 ========================================================= */
 
 sidebarToggle?.addEventListener(
   "click",
-  toggleSidebar
-);
+  () => {
+
+    if (!appLayout) {
+      return;
+    }
 
 
-function toggleSidebar() {
+    const isClosed =
+      appLayout.classList.toggle(
+        "sidebar-closed"
+      );
 
-  if (!appLayout ||
-      !sidebarToggle) {
 
-    return;
+    if (sidebarToggle) {
+
+      sidebarToggle.textContent =
+        isClosed
+          ? "›"
+          : "‹";
+
+
+      sidebarToggle.title =
+        isClosed
+          ? "Open sidebar"
+          : "Collapse sidebar";
+
+    }
 
   }
-
-
-  const closed =
-    appLayout.classList.toggle(
-      "sidebar-closed"
-    );
-
-
-  sidebarToggle.textContent =
-    closed
-      ? "›"
-      : "‹";
-
-
-  sidebarToggle.title =
-    closed
-      ? "Open sidebar"
-      : "Collapse sidebar";
-
-}
+);
 
 
 /* =========================================================
@@ -909,8 +1111,9 @@ function collectorKey() {
     auth.currentUser;
 
 
-  if (!user)
+  if (!user) {
     return null;
+  }
 
 
   return (
@@ -927,8 +1130,9 @@ function isCollector() {
     collectorKey();
 
 
-  if (!key)
+  if (!key) {
     return false;
+  }
 
 
   return (
@@ -983,8 +1187,9 @@ function setupCollectorState() {
 
 function updateDrawerCollectorState() {
 
-  if (!drawerCollectorStatus)
+  if (!drawerCollectorStatus) {
     return;
+  }
 
 
   drawerCollectorStatus.textContent =
@@ -994,6 +1199,10 @@ function updateDrawerCollectorState() {
 
 }
 
+
+/* =========================================================
+   ACTIVATE COLLECTOR
+========================================================= */
 
 becomeCollectorBtn?.addEventListener(
   "click",
@@ -1014,8 +1223,9 @@ becomeCollectorBtn?.addEventListener(
       collectorKey();
 
 
-    if (!key)
+    if (!key) {
       return;
+    }
 
 
     localStorage.setItem(
@@ -1045,7 +1255,7 @@ openWorkstationBtn?.addEventListener(
 
 
 /* =========================================================
-   WORKSPACE
+   WORKSPACE NAVIGATION
 ========================================================= */
 
 backToStoriesBtn?.addEventListener(
@@ -1227,11 +1437,7 @@ function restoreSelection() {
 
 document.addEventListener(
   "selectionchange",
-  () => {
-
-    saveSelection();
-
-  }
+  saveSelection
 );
 
 
@@ -1254,7 +1460,7 @@ editorDocument?.addEventListener(
 
 
 /* =========================================================
-   TOOLBAR COMMANDS
+   WORD-LIKE FORMATTING
 ========================================================= */
 
 document
@@ -1273,12 +1479,8 @@ document
           restoreSelection();
 
 
-          const command =
-            button.dataset.command;
-
-
           document.execCommand(
-            command,
+            button.dataset.command,
             false,
             null
           );
@@ -1293,323 +1495,318 @@ document
   );
 
 
-$("font-family")
-  ?.addEventListener(
-    "change",
-    event => {
+$("font-family")?.addEventListener(
+  "change",
+  event => {
 
-      restoreSelection();
-
-
-      document.execCommand(
-        "fontName",
-        false,
-        event.target.value
-      );
+    restoreSelection();
 
 
-      saveSelection();
-
-    }
-  );
-
-
-$("font-size")
-  ?.addEventListener(
-    "change",
-    event => {
-
-      restoreSelection();
+    document.execCommand(
+      "fontName",
+      false,
+      event.target.value
+    );
 
 
-      document.execCommand(
-        "fontSize",
-        false,
-        event.target.value
-      );
+    saveSelection();
+
+  }
+);
 
 
-      saveSelection();
+$("font-size")?.addEventListener(
+  "change",
+  event => {
 
-    }
-  );
-
-
-$("text-color")
-  ?.addEventListener(
-    "input",
-    event => {
-
-      restoreSelection();
+    restoreSelection();
 
 
-      document.execCommand(
-        "foreColor",
-        false,
-        event.target.value
-      );
+    document.execCommand(
+      "fontSize",
+      false,
+      event.target.value
+    );
 
 
-      saveSelection();
+    saveSelection();
 
-    }
-  );
-
-
-$("highlight-color")
-  ?.addEventListener(
-    "input",
-    event => {
-
-      restoreSelection();
+  }
+);
 
 
-      document.execCommand(
-        "hiliteColor",
-        false,
-        event.target.value
-      );
+$("text-color")?.addEventListener(
+  "input",
+  event => {
+
+    restoreSelection();
 
 
-      saveSelection();
-
-    }
-  );
-
-
-$("heading-one")
-  ?.addEventListener(
-    "mousedown",
-    event => {
-
-      event.preventDefault();
-
-      restoreSelection();
+    document.execCommand(
+      "foreColor",
+      false,
+      event.target.value
+    );
 
 
-      document.execCommand(
-        "formatBlock",
-        false,
-        "h1"
-      );
+    saveSelection();
+
+  }
+);
 
 
-      saveSelection();
+$("highlight-color")?.addEventListener(
+  "input",
+  event => {
 
-    }
-  );
-
-
-$("heading-two")
-  ?.addEventListener(
-    "mousedown",
-    event => {
-
-      event.preventDefault();
-
-      restoreSelection();
+    restoreSelection();
 
 
-      document.execCommand(
-        "formatBlock",
-        false,
-        "h2"
-      );
+    document.execCommand(
+      "hiliteColor",
+      false,
+      event.target.value
+    );
 
 
-      saveSelection();
+    saveSelection();
 
-    }
-  );
-
-
-$("blockquote-tool")
-  ?.addEventListener(
-    "mousedown",
-    event => {
-
-      event.preventDefault();
-
-      restoreSelection();
-
-
-      document.execCommand(
-        "formatBlock",
-        false,
-        "blockquote"
-      );
-
-
-      saveSelection();
-
-    }
-  );
+  }
+);
 
 
 /* =========================================================
-   LINK
+   HEADINGS
 ========================================================= */
 
-$("insert-link")
-  ?.addEventListener(
-    "mousedown",
-    event => {
+$("heading-one")?.addEventListener(
+  "mousedown",
+  event => {
 
-      event.preventDefault();
+    event.preventDefault();
 
-      restoreSelection();
+    restoreSelection();
 
 
-      const url =
+    document.execCommand(
+      "formatBlock",
+      false,
+      "h1"
+    );
+
+
+    saveSelection();
+
+  }
+);
+
+
+$("heading-two")?.addEventListener(
+  "mousedown",
+  event => {
+
+    event.preventDefault();
+
+    restoreSelection();
+
+
+    document.execCommand(
+      "formatBlock",
+      false,
+      "h2"
+    );
+
+
+    saveSelection();
+
+  }
+);
+
+
+$("blockquote-tool")?.addEventListener(
+  "mousedown",
+  event => {
+
+    event.preventDefault();
+
+    restoreSelection();
+
+
+    document.execCommand(
+      "formatBlock",
+      false,
+      "blockquote"
+    );
+
+
+    saveSelection();
+
+  }
+);
+
+
+/* =========================================================
+   INSERT LINK
+========================================================= */
+
+$("insert-link")?.addEventListener(
+  "mousedown",
+  event => {
+
+    event.preventDefault();
+
+    restoreSelection();
+
+
+    const url =
+      window.prompt(
+        "Enter the URL:"
+      );
+
+
+    if (!url) {
+
+      editorDocument?.focus();
+
+      return;
+
+    }
+
+
+    document.execCommand(
+      "createLink",
+      false,
+      url
+    );
+
+
+    saveSelection();
+
+  }
+);
+
+
+/* =========================================================
+   INSERT TABLE
+========================================================= */
+
+$("insert-table")?.addEventListener(
+  "click",
+  () => {
+
+    const rows =
+      Number(
         window.prompt(
-          "Enter the URL:"
-        );
-
-
-      if (!url) {
-
-        editorDocument?.focus();
-
-        return;
-
-      }
-
-
-      document.execCommand(
-        "createLink",
-        false,
-        url
+          "Number of rows:",
+          "3"
+        )
       );
 
 
-      saveSelection();
+    const columns =
+      Number(
+        window.prompt(
+          "Number of columns:",
+          "3"
+        )
+      );
+
+
+    if (
+      !rows ||
+      !columns ||
+      rows < 1 ||
+      columns < 1
+    ) {
+
+      return;
 
     }
-  );
 
 
-/* =========================================================
-   TABLE
-========================================================= */
-
-$("insert-table")
-  ?.addEventListener(
-    "click",
-    () => {
-
-      const rows =
-        Number(
-          window.prompt(
-            "Number of rows:",
-            "3"
-          )
-        );
+    const table =
+      document.createElement(
+        "table"
+      );
 
 
-      const columns =
-        Number(
-          window.prompt(
-            "Number of columns:",
-            "3"
-          )
-        );
+    const tbody =
+      document.createElement(
+        "tbody"
+      );
 
 
-      if (
-        !rows ||
-        !columns ||
-        rows < 1 ||
-        columns < 1
-      ) {
+    for (
+      let r = 0;
+      r < rows;
+      r++
+    ) {
 
-        return;
-
-      }
-
-
-      const table =
+      const tr =
         document.createElement(
-          "table"
-        );
-
-
-      const tbody =
-        document.createElement(
-          "tbody"
+          "tr"
         );
 
 
       for (
-        let r = 0;
-        r < rows;
-        r++
+        let c = 0;
+        c < columns;
+        c++
       ) {
 
-        const tr =
+        const cell =
           document.createElement(
-            "tr"
-          );
-
-
-        for (
-          let c = 0;
-          c < columns;
-          c++
-        ) {
-
-          const cell =
-            document.createElement(
-              r === 0
-                ? "th"
-                : "td"
-            );
-
-
-          cell.textContent =
             r === 0
-              ? `Column ${c + 1}`
-              : "Enter data";
-
-
-          cell.contentEditable =
-            "true";
-
-
-          tr.appendChild(
-            cell
+              ? "th"
+              : "td"
           );
 
-        }
+
+        cell.textContent =
+          r === 0
+            ? `Column ${c + 1}`
+            : "Enter data";
 
 
-        tbody.appendChild(
-          tr
+        cell.contentEditable =
+          "true";
+
+
+        tr.appendChild(
+          cell
         );
 
       }
 
 
-      table.appendChild(
-        tbody
-      );
-
-
-      restoreSelection();
-
-
-      editorDocument?.appendChild(
-        table
-      );
-
-
-      editorDocument?.appendChild(
-        document.createElement(
-          "p"
-        )
+      tbody.appendChild(
+        tr
       );
 
     }
-  );
+
+
+    table.appendChild(
+      tbody
+    );
+
+
+    restoreSelection();
+
+
+    editorDocument?.appendChild(
+      table
+    );
+
+
+    editorDocument?.appendChild(
+      document.createElement(
+        "p"
+      )
+    );
+
+  }
+);
 
 
 /* =========================================================
@@ -1637,7 +1834,7 @@ fullscreenEditorBtn?.addEventListener(
 
 
 /* =========================================================
-   DRAFTS
+   DRAFT
 ========================================================= */
 
 saveDraftBtn?.addEventListener(
@@ -1699,6 +1896,13 @@ function loadDraft() {
 
   if (!raw) {
 
+    if (storyDate) {
+
+      storyDate.value =
+        today();
+
+    }
+
     return;
 
   }
@@ -1712,23 +1916,28 @@ function loadDraft() {
       );
 
 
-    if (storyTitle)
+    if (storyTitle) {
+
       storyTitle.value =
         draft.title ||
         "";
 
+    }
 
-    if (editorDocument)
+
+    if (editorDocument) {
+
       editorDocument.innerHTML =
         draft.content ||
         "";
 
-  } catch (
-    error
-  ) {
+    }
+
+  }
+  catch (error) {
 
     console.warn(
-      "Draft failed to load:",
+      "[Legacy] Draft load failed:",
       error
     );
 
@@ -1814,7 +2023,7 @@ purifyPublishBtn?.addEventListener(
 
 
 /* =========================================================
-   BACKGROUND FORMULA
+   PURIFICATION UI
 ========================================================= */
 
 async function runPurification(
@@ -1858,7 +2067,7 @@ async function runPurification(
 
 
   await sleep(
-    450
+    500
   );
 
 
@@ -1923,14 +2132,14 @@ async function runPurification(
 
 
 /* =========================================================
-   V1 INTERNAL PARAMETERS
+   INTERNAL PARAMETERS
 ========================================================= */
 
 function deriveInternalParameters(
   payload
 ) {
 
-  const words =
+  const wordCount =
     payload.bodyText
       .split(/\s+/)
       .filter(Boolean)
@@ -1939,7 +2148,7 @@ function deriveInternalParameters(
 
   const C =
     clamp(
-      words >= 120
+      wordCount >= 120
         ? 0.85
         : 0.70,
       0,
@@ -1988,7 +2197,7 @@ function deriveInternalParameters(
 
 
 /* =========================================================
-   FORMULA
+   LEGACY FORMULA V1
 ========================================================= */
 
 function calculateFormula(
@@ -2057,7 +2266,7 @@ function calculateFormula(
 
 
 /* =========================================================
-   PUBLISH
+   PUBLISH STORY
 ========================================================= */
 
 async function publishStory(
@@ -2069,8 +2278,9 @@ async function publishStory(
     auth.currentUser;
 
 
-  if (!user)
+  if (!user) {
     return;
+  }
 
 
   const story = {
@@ -2105,6 +2315,7 @@ async function publishStory(
       "Legacy Formula v1",
 
     purification: {
+
       W:
         purification.W,
 
@@ -2116,6 +2327,7 @@ async function publishStory(
 
       F:
         purification.F
+
     },
 
     sourceType:
@@ -2125,9 +2337,7 @@ async function publishStory(
       user.uid,
 
     authorName:
-      getDisplayName(
-        user
-      ),
+      getDisplayName(user),
 
     createdAt:
       serverTimestamp()
@@ -2160,17 +2370,17 @@ async function publishStory(
     };
 
 
-    const localStories =
+    const stories =
       getLocalStories();
 
 
-    localStories.unshift(
+    stories.unshift(
       localStory
     );
 
 
     saveLocalStories(
-      localStories
+      stories
     );
 
 
@@ -2189,19 +2399,18 @@ async function publishStory(
           "active"
         );
 
+
         showStoriesPanel();
 
       },
       900
     );
 
-
-  } catch (
-    error
-  ) {
+  }
+  catch (error) {
 
     console.error(
-      "Firestore error:",
+      "[Legacy] Firestore publish error:",
       error
     );
 
@@ -2220,17 +2429,17 @@ async function publishStory(
     };
 
 
-    const localStories =
+    const stories =
       getLocalStories();
 
 
-    localStories.unshift(
+    stories.unshift(
       localStory
     );
 
 
     saveLocalStories(
-      localStories
+      stories
     );
 
 
@@ -2242,64 +2451,6 @@ async function publishStory(
     await loadStories();
 
   }
-
-}
-
-
-/* =========================================================
-   PROCESSING UI
-========================================================= */
-
-function resetProcessing() {
-
-  for (
-    let i = 1;
-    i <= 5;
-    i++
-  ) {
-
-    const element =
-      $(
-        `processing-${i}`
-      );
-
-
-    if (!element)
-      continue;
-
-
-    element.classList.remove(
-      "done"
-    );
-
-
-  }
-
-}
-
-
-function markProcessing(
-  number,
-  text
-) {
-
-  const element =
-    $(
-      `processing-${number}`
-    );
-
-
-  if (!element)
-    return;
-
-
-  element.textContent =
-    text;
-
-
-  element.classList.add(
-    "done"
-  );
 
 }
 
@@ -2339,18 +2490,20 @@ async function loadStories() {
     firestoreStories =
       snapshot.docs.map(
         doc => ({
+
           id:
             doc.id,
+
           ...doc.data()
+
         })
       );
 
-  } catch (
-    error
-  ) {
+  }
+  catch (error) {
 
     console.warn(
-      "Firestore Stories unavailable:",
+      "[Legacy] Firestore Stories unavailable:",
       error
     );
 
@@ -2382,13 +2535,18 @@ async function loadStories() {
 }
 
 
+/* =========================================================
+   RENDER STORIES
+========================================================= */
+
 function renderStories(
   container,
   stories
 ) {
 
-  if (!container)
+  if (!container) {
     return;
+  }
 
 
   container.innerHTML =
@@ -2472,6 +2630,7 @@ function storyCard(
           ${category.toUpperCase()}
         </span>
 
+
         <span class="story-status">
           ● ${escapeHtml(score)}
         </span>
@@ -2495,6 +2654,7 @@ function storyCard(
           ${location}
         </span>
 
+
         <span
           style="color:#fff;font-weight:700;"
         >
@@ -2511,13 +2671,11 @@ function storyCard(
 
 
 /* =========================================================
-   FILTER
+   STORY FILTER
 ========================================================= */
 
 window.filterLandingStories =
-  function(
-    category
-  ) {
+  function(category) {
 
     document
       .querySelectorAll(
@@ -2531,12 +2689,24 @@ window.filterLandingStories =
             "";
 
 
-          card.style.display =
+          if (
             category === "all" ||
             cardCategory.toLowerCase() ===
-              String(category).toLowerCase()
-              ? "flex"
-              : "none";
+              String(
+                category
+              ).toLowerCase()
+          ) {
+
+            card.style.display =
+              "flex";
+
+          }
+          else {
+
+            card.style.display =
+              "none";
+
+          }
 
         }
       );
@@ -2558,7 +2728,8 @@ function getLocalStories() {
       ) || "[]"
     );
 
-  } catch {
+  }
+  catch {
 
     return [];
 
@@ -2585,8 +2756,63 @@ function saveLocalStories(
 
 
 /* =========================================================
-   HELPERS
+   RESET / HELPERS
 ========================================================= */
+
+function resetProcessing() {
+
+  for (
+    let i = 1;
+    i <= 5;
+    i++
+  ) {
+
+    const element =
+      $(
+        `processing-${i}`
+      );
+
+
+    if (!element) {
+      continue;
+    }
+
+
+    element.classList.remove(
+      "done"
+    );
+
+  }
+
+}
+
+
+function markProcessing(
+  number,
+  text
+) {
+
+  const element =
+    $(
+      `processing-${number}`
+    );
+
+
+  if (!element) {
+    return;
+  }
+
+
+  element.textContent =
+    text;
+
+
+  element.classList.add(
+    "done"
+  );
+
+}
+
 
 function buildSummary(
   text
@@ -2611,12 +2837,26 @@ function buildSummary(
 
 
   return (
-    clean.slice(
-      0,
-      277
-    ).trim() +
+    clean
+      .slice(
+        0,
+        277
+      )
+      .trim() +
     "..."
   );
+
+}
+
+
+function today() {
+
+  return new Date()
+    .toISOString()
+    .slice(
+      0,
+      10
+    );
 
 }
 
@@ -2674,18 +2914,86 @@ function escapeHtml(
 }
 
 
+/* =========================================================
+   AUTH ERROR MESSAGES
+========================================================= */
+
 function friendlyAuthError(
   error
 ) {
 
   const code =
-    error.code ||
-    "";
+    error?.code || "";
 
 
   if (
     code.includes(
-      "email-already-in-use"
+      "auth/unauthorized-domain"
+    )
+  ) {
+
+    return (
+      "Legacy's domain is not authorized in Firebase yet. Add legacy-data.onrender.com under Authentication → Settings → Authorized domains."
+    );
+
+  }
+
+
+  if (
+    code.includes(
+      "auth/operation-not-allowed"
+    )
+  ) {
+
+    return (
+      "Google sign-in is not enabled in Firebase Authentication."
+    );
+
+  }
+
+
+  if (
+    code.includes(
+      "auth/popup-blocked"
+    )
+  ) {
+
+    return (
+      "The Google popup was blocked. Legacy will try redirect sign-in."
+    );
+
+  }
+
+
+  if (
+    code.includes(
+      "auth/popup-closed-by-user"
+    )
+  ) {
+
+    return (
+      "The Google sign-in window was closed."
+    );
+
+  }
+
+
+  if (
+    code.includes(
+      "auth/cancelled-popup-request"
+    )
+  ) {
+
+    return (
+      "Another Google sign-in request is already running."
+    );
+
+  }
+
+
+  if (
+    code.includes(
+      "auth/email-already-in-use"
     )
   ) {
 
@@ -2698,10 +3006,10 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "invalid-credential"
+      "auth/invalid-credential"
     ) ||
     code.includes(
-      "wrong-password"
+      "auth/wrong-password"
     )
   ) {
 
@@ -2714,7 +3022,7 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "user-not-found"
+      "auth/user-not-found"
     )
   ) {
 
@@ -2727,7 +3035,7 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "weak-password"
+      "auth/weak-password"
     )
   ) {
 
@@ -2740,7 +3048,7 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "invalid-email"
+      "auth/invalid-email"
     )
   ) {
 
@@ -2753,19 +3061,19 @@ function friendlyAuthError(
 
   if (
     code.includes(
-      "popup-closed-by-user"
+      "auth/network-request-failed"
     )
   ) {
 
     return (
-      "Google sign-in was closed."
+      "Network error. Check your internet connection and try again."
     );
 
   }
 
 
   return (
-    error.message ||
+    error?.message ||
     code ||
     "Something went wrong."
   );
@@ -2780,23 +3088,18 @@ function friendlyAuthError(
 if (storyDate) {
 
   storyDate.value =
-    new Date()
-      .toISOString()
-      .slice(
-        0,
-        10
-      );
+    today();
 
 }
 
 
 /* =========================================================
-   GLOBALS
+   GLOBAL FUNCTIONS
 ========================================================= */
 
 window.openWorkstation =
   openWorkstation;
 
+
 window.showStoriesPanel =
   showStoriesPanel;
-```
